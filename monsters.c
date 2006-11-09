@@ -292,7 +292,7 @@ genocide()
 	mp = THINGPTR(ip);
 	nip = next(ip);
 	if (mp->t_type == c)
-	    remove(&mp->t_pos, ip);
+	    removelist(&mp->t_pos, ip);
     }
     i = mon_index(c);			/* get index to monster */
     monsters[i].m_lev.l_lev = -1;	/* get rid of it */

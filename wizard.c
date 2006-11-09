@@ -404,9 +404,9 @@ passwd()
     mpos = 0;
     sp = buf;
     while ((c = getchar()) != '\n' && c != '\r' && c != ESCAPE)
-	if (c == KILL)
+	if (c == killchar())
 	    sp = buf;
-	else if (c == ERASE && sp > buf)
+	else if (c == erasechar() && sp > buf)
 	    sp--;
 	else
 	    *sp++ = c;

@@ -13,8 +13,8 @@
  */
 wear()
 {
-	reg struct linked_list *item;
-	reg struct object *obj;
+    struct linked_list *item;
+    struct object *obj;
 
 	if (cur_armor != NULL) {
 		msg("You are already wearing some");

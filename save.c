@@ -10,11 +10,11 @@
 #include <signal.h>
 #include "rogue.h"
 #include "rogue.ext"
+#include <errno.h>
 
-EXTCHAR *sys_errlist[], version[], encstr[];
+EXTCHAR version[], encstr[];
 EXTCHAR *ctime();
-EXTBOOL _endwin;
-EXTINT errno;
+
 
 typedef struct stat STAT;
 STAT sbuf;
@@ -56,7 +56,7 @@ gotfile:
 	setgid(getgid());
 	umask(022);
 	if ((savef = fopen(file_name, "w")) == NULL) {
-	    msg(sys_errlist[errno]);
+	    msg(strerror(errno));
 	    return FALSE;
 	}
 	/*
@@ -99,7 +99,6 @@ reg FILE *savef;
 	fstat(fileno(savef), &sbuf);
 	fwrite("junk", 1, 5, savef);
 	fseek(savef, 0L, 0);
-	_endwin = TRUE;
 	encwrite(version,(unsigned int)(sbrk(0) - version), savef);
 	fclose(savef);
 }
@@ -181,17 +180,16 @@ char **envp;
 	    }
 	}
 	environ = envp;
-	if (!My_term && isatty(2)) {
+	if (isatty(2)) {
 	    reg char	*sp;
 
-	    _tty_ch = 2;
 	    gettmode();
 	    if ((sp = getenv("TERM")) == NULL)
-		sp = Def_term;
+		sp = "xterm";
 	    setterm(sp);
 	}
 	else
-	    setterm(Def_term);
+	    setterm("xterm");
 	strcpy(file_name, file);
 	setup();
 	clearok(curscr, TRUE);

@@ -193,7 +193,7 @@ reg struct thing *mp;
 			purse = 0;
 		    if (purse != lastpurse)
 			msg("Your purse feels lighter");
-		    remove(&mp->t_pos,find_mons(mp->t_pos.y,mp->t_pos.x));
+		    removelist(&mp->t_pos,find_mons(mp->t_pos.y,mp->t_pos.x));
 		}
 		when 'N': {
 		    reg struct linked_list *list, *steal;
@@ -217,7 +217,7 @@ reg struct thing *mp;
 			sobj = OBJPTR(steal);
 			if (o_on(sobj,ISPROT))
 			    break;
-			remove(&mp->t_pos,
+			removelist(&mp->t_pos,
 			       find_mons(mp->t_pos.y,mp->t_pos.x));
 			if (sobj->o_count > 1 && sobj->o_group == 0) {
 				reg int oc;
@@ -599,7 +599,7 @@ reg char *mname;
  * remove:
  *	Remove a monster from the screen
  */
-remove(mp, item)
+removelist(mp, item)
 reg struct coord *mp;
 reg struct linked_list *item;
 {
@@ -697,7 +697,7 @@ bool pr;
     /*
      * Get rid of the monster.
      */
-    remove(&tp->t_pos, item);
+    removelist(&tp->t_pos, item);
     while (pitem != NULL) {
 	reg struct object *obj;
 

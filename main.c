@@ -23,10 +23,10 @@ static int num_checks;		/* times we've gone over in checkout() */
 #ifdef SYS3
 #define FIND(a,b)	strrchr((a),(b))
 extern char *strrchr();
-#else !SYS3
+#else /*!SYS3*/
 #define FIND(a,b)	rindex((a),(b))
 extern char *rindex();
-#endif SYS3
+#endif /*SYS3*/
 
 main(argc, argv, envp)
 char **argv;
@@ -291,8 +291,7 @@ char *s;
  *	to the way they were when he started
  */
 
-byebye(how)
-int how;
+void byebye(int how)
 {
 	resetty();		/* restore tty params */
 	exit(how);		/* exit like flag says */
@@ -361,7 +360,9 @@ setup()
 	signal(SIGILL, auto_save);
 	signal(SIGTRAP, auto_save);
 	signal(SIGIOT, auto_save);
+#ifdef SIGEMT
 	signal(SIGEMT, auto_save);
+#endif
 	signal(SIGFPE, auto_save);
 	signal(SIGBUS, auto_save);
 	signal(SIGSEGV, auto_save);

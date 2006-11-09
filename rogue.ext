@@ -1,6 +1,6 @@
 #ifdef unctrl
 #undef unctrl		/* We have our own unctrl() function */
-#endif unctrl
+#endif /*unctrl*/
 
 EXTTHG player;
 EXTWEP weaps[];
@@ -26,7 +26,7 @@ EXTBOOL running, nochange, after, inwhgt, isfight, firstmove, keyhit;
 EXTBOOL wizard, waswizard, in_shell, amulet, door_stop, playing, pooltelep;
 EXTBOOL notify, ws_know[], p_know[], s_know[], r_know[], tradelev;
 EXTCHAR home[], file_name[], whoami[], fruit[], curpurch[];
-EXTCHAR *ws_guess[], *s_guess[], *r_guess[], *p_guess[], *unctrl();
+EXTCHAR *ws_guess[], *s_guess[], *r_guess[], *p_guess[];
 EXTCHAR *r_stones[], *p_colors[], *s_names[], *ws_type[], *ws_made[];
 EXTCHAR errbuf[], prbuf[], huh[], *morestr, *spacemsg, *typ_name();
 EXTCHAR *new(), *strcpy(), *strcat(), *inv_name(), pack_char(), *sbrk();
@@ -34,3 +34,4 @@ EXTCHAR *malloc(), *getenv(), *tr_name(), *release, take, runch;
 EXTCHAR *num(), *ring_num(), *charge_str(), *vowelstr(), *gettime(), lower();
 EXTSTAT max_stats;
 extern struct real re_stats;
+void byebye(int how);

@@ -7,12 +7,12 @@
 /*
  * where scorefile should live
  */
-#define SCOREFILE	"/usr/sheriff/jpo/games/lib/rogue_roll7.2"
+#define SCOREFILE	"/nexor/users/jpo/games/lib/rogue_roll7.2"
 
 /*
  * Where the "debug" will print its stuff
  */
-#define BUGFILE		"/usr/sheriff/jpo/games/lib/rogue_bugs7.2"
+#define BUGFILE		"/nexor/users/jpo/games/lib/rogue_bugs7.2"
 
 /*
  * Variables for checking to make sure the system isn't too loaded
@@ -24,7 +24,7 @@
 #undef	MAXLOAD		40	/* 10 * max 15 minute load average */
 #endif
 
-#ifdef MAXUSERS|MAXLOAD
+#if defined(MAXUSERS) || defined(MAXLOAD)
 #define	CHECKTIME	5	/* number of minutes between load checks */
 				/* if not defined, checks only on start */
 #endif

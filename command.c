@@ -163,11 +163,11 @@ command()
 		    else
 			after = FALSE;
 		when 'v': msg("Super Rogue version %s.",release);
-		when CTRL(L) : after = FALSE; restscr(cw);
-		when CTRL(R) : after = FALSE; msg(huh);
+		when CTRL('L') : after = FALSE; restscr(cw);
+		when CTRL('R') : after = FALSE; msg(huh);
 		when 'a': after = FALSE; prntstats(1);
 		when 'x': after = FALSE; prntstats(2);
-		when CTRL(B) : after = FALSE; prhwfile(BUGFILE);
+		when CTRL('B') : after = FALSE; prhwfile(BUGFILE);
 		when '@' : if (author())
 			      msg("Hero @ %d,%d : Stairs @ %d,%d",
 				hero.y,hero.x,stairs.y,stairs.x);
@@ -185,7 +185,7 @@ command()
 			activity();
 			after = FALSE;
 		    }
-		when CTRL(P) :
+		when CTRL('P') :
 		    after = FALSE;
 		    if (wizard) {
 			wizard = FALSE;
@@ -219,16 +219,16 @@ command()
 		    after = FALSE;
 		    if (wizard) switch (ch) {
 			case 'C' :	create_obj(FALSE);
-			when CTRL(I) :	inventory(lvl_obj, 1);
-			when CTRL(W) :	whatis(NULL);
-			when CTRL(D) :	level++; new_level(FALSE);
-			when CTRL(U) :	level--; new_level(FALSE);
-			when CTRL(F) :	displevl();
-			when CTRL(X) :	dispmons();
-			when CTRL(T) :	teleport();
-			when CTRL(E) :	msg("food left: %d", food_left);
-			when CTRL(A) :	msg("%d things in your pack",inpack);
-			when CTRL(G) :	add_pass();
+			when CTRL('I') :	inventory(lvl_obj, 1);
+			when CTRL('W') :	whatis(NULL);
+			when CTRL('D') :	level++; new_level(FALSE);
+			when CTRL('U') :	level--; new_level(FALSE);
+			when CTRL('F') :	displevl();
+			when CTRL('X') :	dispmons();
+			when CTRL('T') :	teleport();
+			when CTRL('E') :	msg("food left: %d", food_left);
+			when CTRL('A') :	msg("%d things in your pack",inpack);
+			when CTRL('G') :	add_pass();
 			when 'M' : {
 			    int tlev;
 			    prbuf[0] = NULL;
@@ -251,7 +251,7 @@ command()
 				}
 			    }
 			}
-			when CTRL(N) : {
+			when CTRL('N') : {
 			    struct linked_list *item;
 
 			    item = get_item("charge", STICK);
@@ -260,7 +260,7 @@ command()
 				msg("");
 			    }
 			}
-			when CTRL(H) : {
+			when CTRL('H') : {
 			    reg int i;
 			    reg struct linked_list *item;
 			    reg struct object *obj;

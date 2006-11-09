@@ -8,14 +8,7 @@
 
 #undef NULL
 #define NULL	0
-
-#ifdef SYS3
-#define ERASE	_tty.c_cc[VERASE]
-#define KILL	_tty.c_cc[VKILL]
-#else !SYS3
-#define ERASE	_tty.sg_erase
-#define KILL	_tty.sg_kill
-#endif SYS3
+#define reg
 
 /*
  * Maximum number of different things
@@ -97,7 +90,7 @@
 #define off(thing, flag) (((thing).t_flags & flag) == 0)
 
 #ifndef BSD4_2
-#define CTRL(ch) ('ch' & 0x1F)	/* 4.2 defines this in <sys/ttychars.h> */
+#define CTRL(ch) (ch & 0x1F)	/* 4.2 defines this in <sys/ttychars.h> */
 #endif				/* which is included by <curses.h> */
 
 #define ALLOC(x) malloc((unsigned int) x)

@@ -112,7 +112,7 @@ WINDOW *awin;
 	}
 	if (c == -1)
 	    continue;
-	else if(c == ERASE)	{	/* process erase char */
+	else if(c == erasechar())	{	/* process erase char */
 	    if (sp > buf) {
 		register int i;
 
@@ -122,7 +122,7 @@ WINDOW *awin;
 	    }
 	    continue;
 	}
-	else if (c == KILL)	{   /* process kill character */
+	else if (c == killchar())	{   /* process kill character */
 	    sp = buf;
 	    wmove(awin, oy, ox);
 	    continue;

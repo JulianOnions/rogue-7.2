@@ -108,7 +108,7 @@ int amount, aflag;
 	     else packend = "at your untimely demise";
 	printf("[Hit return to continue]");
 	fflush(stdout);
-	gets(prbuf);
+	getch();
 	wclear(hw);
 	wprintw(hw,"Contents of your pack %s:\n\n",packend);
 	idenpack();		/* identify all the pack */
@@ -146,7 +146,7 @@ int amount, aflag;
 	mvwaddstr(hw,LINES-1,0,"[Press return to continue]");
 	draw(hw);
 	fflush(stdout);
-	gets(prbuf);
+	getch();
 	wclear(cw);
 	draw(cw);
     }
@@ -209,7 +209,7 @@ int amount, aflag;
 	    }
 	    else if (prflags == 2) {
 		fflush(stdout);
-		gets(prbuf);
+		fgets(prbuf, LINLEN, stdin);
 		if (prbuf[0] == 'd') {
 		    for (sc2 = scp; sc2 < &top_ten[9]; sc2++)
 			*sc2 = *(sc2 + 1);

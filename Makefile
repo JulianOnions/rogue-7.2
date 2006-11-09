@@ -7,7 +7,7 @@ OBJS=	vers.o global.o armor.o chase.o command.o daemon.o daemons.o\
 	disply.o encumb.o fight.o init.o io.o list.o main.o misc.o\
 	monsters.o move.o new_level.o options.o pack.o passages.o\
 	potions.o pstats.o rings.o rip.o rooms.o save.o scrolls.o\
-	sticks.o things.o trader.o weapons.o wizard.o strings.o
+	sticks.o things.o trader.o weapons.o wizard.o 
 CFILES=	vers.c global.c armor.c chase.c command.c daemon.c daemons.c\
 	disply.c encumb.c fight.c init.c io.c list.c main.c misc.c\
 	monsters.c move.c new_level.c options.c pack.c passages.c\
@@ -15,13 +15,13 @@ CFILES=	vers.c global.c armor.c chase.c command.c daemon.c daemons.c\
 	sticks.c things.c trader.c weapons.c wizard.c
 
 VERSION=	-DBSD4_2
-CFLAGS=		-O -c
+CFLAGS=		-g -c
 LDFLAGS=	
 INSDIR = /usr/sheriff/jpo/games
 
 rogue7.2: $(HDRS) $(OBJS)
-	$(CC) $(LDFLAGS) $(OBJS) -lcurses -ltermlib -o rogue7.2
-	
+	$(CC) $(LDFLAGS) $(OBJS) -lcurses -lcrypt -o rogue7.2
+
 install: rogue7.2
 	cp rogue7.2 $(INSDIR)/rogue7.2
 	$(STRIP) $(INSDIR)/rogue7.2
@@ -35,19 +35,6 @@ global.o init.o wizard.o things.o: rogue.h
 
 vers.o:	vers.c
 	$(CC) $(CFLAGS) $(VERSION) vers.c
-
-strings.o: strings
-	$(XSTR)
-	$(CC) -S xs.c
-	ed - < :rofix xs.s
-	$(AS) -o strings.o xs.s
-	rm xs.s xs.c
-
-.c.o:
-	$(CC) -E $(VERSION) $*.c | $(XSTR) -c -
-	$(CC) $(CFLAGS) x.c
-	mv x.o $*.o
-	rm x.c
 
 listing:
 	pr $(HDRS) $(CFILES) | lpr

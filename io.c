@@ -8,7 +8,9 @@
 #include "rogue.h"
 #include "mach_dep.h"
 #include "rogue.ext"
+#include <stdarg.h>
 
+void doadd(const char *fmt, va_list ap);
 /*
  * msg:
  *	Display a message at the top of the screen.
@@ -19,10 +21,9 @@ static int newpos = 0;
 
 
 /*VARARGS1*/
-msg(fmt, args)
-char *fmt;
-int args;
+msg(const char *fmt, ...)
 {
+    va_list ap;
     /*
      * if the string is "", just clear the line
      */
@@ -33,21 +34,24 @@ int args;
 	mpos = 0;
 	return;
     }
+    va_start(ap, fmt);
     /*
      * otherwise add to the message and flush it out
      */
-    doadd(fmt, &args);
+    doadd(fmt, ap);
+    va_end(ap);
     endmsg();
 }
 
 /*
  * add things to the current message
  */
-addmsg(fmt, args)
-char *fmt;
-int args;
+addmsg(const char *fmt, ...)
 {
-    doadd(fmt, &args);
+    va_list ap;
+    va_start(ap, fmt);
+    doadd(fmt, ap);
+    va_end(ap);
 }
 
 /*
@@ -70,26 +74,9 @@ endmsg()
     newpos = 0;
 }
 
-doadd(fmt, args)
-char *fmt;
-int *args;
+void doadd(const char *fmt, va_list ap)
 {
-    extern FILE *_pfile;
-    static FILE junk;
-
-    /*
-     * Do the printf into buf
-     */
-    junk._flag = _IOWRT + _IOSTRG;
-    junk._ptr = &msgbuf[newpos];
-    junk._cnt = 32767;
-#ifdef SYS3
-    _pfile = &junk;
-    _print(fmt, &args);
-#else !SYS3
-    _doprnt(fmt, args, &junk);
-#endif SYS3
-    putc('\0', &junk);
+    vsprintf(&msgbuf[newpos], fmt, ap);
     newpos = strlen(msgbuf);
 }
 
@@ -139,20 +126,6 @@ readchar()
 }
 
 /*
- * unctrl:
- *	Print a readable version of a certain character
- */
-
-char *
-unctrl(ch)
-char ch;
-{
-    extern char *_unctrl[];		/* Defined in curses library */
-
-    return _unctrl[ch&0177];
-}
-
-/*
  * status:
  *	Display the important stats line.  Keep the cursor where it was.
  */
@@ -196,8 +169,7 @@ int fromfuse;
  * illeg_ch:
  * 	Returns TRUE if a char shouldn't show on the screen
  */
-illeg_ch(ch)
-char ch;
+int illeg_ch(char ch)
 {
 	if (ch < 32 || ch > 127)
 	    return TRUE;
@@ -211,8 +183,7 @@ char ch;
  *	Sit around until the guy types the right key
  */
 
-wait_for(ch)
-register char ch;
+void wait_for(register char ch)
 {
     register char c;
 
