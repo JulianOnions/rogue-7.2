@@ -1,0 +1,15 @@
+
+			    Rogue 7.2
+
+	This version of rogue, is essentially Super Rogue 7.0
+	as released from Bell Labs, with minor bug fixes,
+	and multi-OS support. Ifdefs have been added specifically
+	for 4.2BSD and System III. These can be defined by setting
+
+			VERSION = -DBSD4_2
+
+				or
+
+			VERSION = -DSYS3
+
+	in the Makefile.

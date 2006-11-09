@@ -1,0 +1,36 @@
+#ifdef unctrl
+#undef unctrl		/* We have our own unctrl() function */
+#endif unctrl
+
+EXTTHG player;
+EXTWEP weaps[];
+EXTARM armors[];
+EXTMON monsters[], *mtlev[];
+EXTTRAP *trap_at(), traps[];
+EXTROOM *roomin(), *oldrp, rooms[];
+EXTCORD *rndmove(), delta, stairs, oldpos;
+EXTLKL *mlist, *lvl_obj, *new_item(), *new_thing();
+EXTLKL *find_mons(), *wake_monster(), *find_obj(), *get_item();
+EXTOBJ *cur_armor, *cur_weapon, *cur_ring[];
+EXTMAG r_magic[], s_magic[], ws_magic[], p_magic[], things[];
+EXTLONG pl_on(), pl_off();
+EXTINT max_hp, quiet, food_left, hungry_state, level, max_level, no_food;
+EXTINT foodlev, total, count, inpack, demoncnt, fung_hit, ntraps;
+EXTINT lastscore, purse, no_command, mpos, seed, dnum, no_move;
+EXTINT curprice, trader, group, levcount;
+EXTINT chkstairs(), rollwand(), swander(), notslow(), notfight();
+EXTINT rchg_str(), stomach(), doctor(), runners(), status(), rnd();
+EXTINT prntfile(), quit(), auto_save(), endit(), unconfuse(), sapem();
+EXTINT noteth(), notregen(), notinvinc(), unsee(), nohaste();
+EXTBOOL running, nochange, after, inwhgt, isfight, firstmove, keyhit;
+EXTBOOL wizard, waswizard, in_shell, amulet, door_stop, playing, pooltelep;
+EXTBOOL notify, ws_know[], p_know[], s_know[], r_know[], tradelev;
+EXTCHAR home[], file_name[], whoami[], fruit[], curpurch[];
+EXTCHAR *ws_guess[], *s_guess[], *r_guess[], *p_guess[], *unctrl();
+EXTCHAR *r_stones[], *p_colors[], *s_names[], *ws_type[], *ws_made[];
+EXTCHAR errbuf[], prbuf[], huh[], *morestr, *spacemsg, *typ_name();
+EXTCHAR *new(), *strcpy(), *strcat(), *inv_name(), pack_char(), *sbrk();
+EXTCHAR *malloc(), *getenv(), *tr_name(), *release, take, runch;
+EXTCHAR *num(), *ring_num(), *charge_str(), *vowelstr(), *gettime(), lower();
+EXTSTAT max_stats;
+extern struct real re_stats;
