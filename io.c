@@ -10,7 +10,9 @@
 #include "rogue.ext"
 #include <stdarg.h>
 
-void doadd(const char *fmt, va_list ap);
+static void doadd(const char *fmt, va_list ap);
+static void endmsg();
+
 /*
  * msg:
  *	Display a message at the top of the screen.
@@ -21,7 +23,7 @@ static int newpos = 0;
 
 
 /*VARARGS1*/
-msg(const char *fmt, ...)
+void msg(const char *fmt, ...)
 {
     va_list ap;
     /*
@@ -46,7 +48,7 @@ msg(const char *fmt, ...)
 /*
  * add things to the current message
  */
-addmsg(const char *fmt, ...)
+void addmsg(const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
@@ -58,7 +60,7 @@ addmsg(const char *fmt, ...)
  * Display a new msg (giving him a chance to see the previous one if it
  * is up there with the --More--)
  */
-endmsg()
+void endmsg()
 {
     strcpy(huh, msgbuf);
     if (mpos)
@@ -85,7 +87,7 @@ void doadd(const char *fmt, va_list ap)
  *	Returns TRUE if it is ok to step on ch
  */
 
-step_ok(ch)
+int step_ok(ch)
 char ch;
 {
 	if (dead_end(ch))
@@ -99,7 +101,7 @@ char ch;
  * dead_end:
  *	Returns TRUE if you cant walk through that character
  */
-dead_end(ch)
+int dead_end(ch)
 char ch;
 {
 	if (ch == '-' || ch == '|' || ch == ' ' || ch == SECRETDOOR)
@@ -115,13 +117,16 @@ char ch;
  *	getchar.
  */
 
-readchar()
+int readchar()
 {
     char c;
+    int failcount = 0;
 
     fflush(stdout);
-    while (read(0, &c, 1) < 0)
+    while (read(0, &c, 1) <= 0) {
+        if(failcount++ > 64) auto_save();
 	continue;
+    }
     return c;
 }
 
@@ -130,8 +135,7 @@ readchar()
  *	Display the important stats line.  Keep the cursor where it was.
  */
 
-status(fromfuse)
-int fromfuse;
+void status(int fromfuse)
 {
     register int oy, ox;
     register char *pb;
@@ -200,7 +204,7 @@ void wait_for(register char ch)
 /*
  * This routine reports the info from a debug call
  */
-debug(errstr)
+void debug(errstr)
 char *errstr;
 {
 	register FILE *dfp;
@@ -227,8 +231,7 @@ char *errstr;
 #else
 #include <time.h>
 #endif
-char *
-gettime()
+char *gettime()
 {
 	register char *timeptr;
 	char *ctime();
@@ -244,8 +247,7 @@ gettime()
  * prhwfile:
  *	This prints out files for the wizard
  */
-prhwfile(fname)
-char *fname;
+void prhwfile(char *fname)
 {
 	register FILE *tfp;
 	register char c;
@@ -279,9 +281,7 @@ char *fname;
  * dbotline:
  *	Displays message on bottom line and waits for a space to return
  */
-dbotline(scr,message)
-WINDOW *scr;
-char *message;
+void dbotline(WINDOW *scr, char *message)
 {
 	mvwaddstr(scr,LINES-1,0,message);
 	draw(scr);
@@ -293,8 +293,7 @@ char *message;
  * restscr:
  *	Restores the screen to the terminal
  */
-restscr(scr)
-WINDOW *scr;
+void restscr(WINDOW *scr)
 {
 	clearok(scr,TRUE);
 	touchwin(scr);

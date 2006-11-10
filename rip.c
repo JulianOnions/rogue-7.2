@@ -77,9 +77,7 @@ reg char monst;
  */
 
 /* VARARGS2 */
-score(amount, aflag, monst)
-char monst;
-int amount, aflag;
+void score(int amount, int aflag, char monst)
 {
     static struct sc_ent {
 	int sc_score;		/* gold */
@@ -120,8 +118,10 @@ int amount, aflag;
 	wprintw(hw,"---   %d gold pieces   ---\n",purse);
 	draw(hw);
     }
-    if (aflag != -1)
+    if (aflag != -1) {
 	endwin();
+	resetty();
+    }
     /*
      * Open file and read list
      */
@@ -280,7 +280,7 @@ total_winner()
     }
     mvprintw(cnt + 1,0,"---  %5d  Gold Pieces  ---",oldpurse);
     refresh();
-    score(purse, 2);
+    score(purse, 2, 0);
     byebye(0);
 }
 

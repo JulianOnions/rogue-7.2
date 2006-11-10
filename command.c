@@ -137,7 +137,7 @@ command()
 			after = FALSE;
 		    else
 			missile(delta.y, delta.x);
-		when 'Q' : after = FALSE; quit();
+		when 'Q' : after = FALSE; quit(0);
 		when 'i' : after = FALSE; inventory(pack, 0);
 		when 'I' : after = FALSE; picky_inven();
 		when 'd' : drop(NULL);
@@ -354,7 +354,7 @@ command()
  * quit:
  *	Have player make certain, then exit.
  */
-quit()
+void quit(int junk)
 {
     /*
      * Reset the signal in case we got here via an interrupt
@@ -619,7 +619,7 @@ shell()
 	signal(SIGQUIT, endit);
 	printf("\n[Press return to continue]");
 	noecho();
-	crmode();
+	cbreak();
 	in_shell = FALSE;
 	wait_for('\n');
 	restscr(cw);

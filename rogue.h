@@ -577,4 +577,4 @@ extern WINDOW *cw, *hw, *mw;
 #define EXTCHAR	extern char
 
 /* stty waits for output to finish & then flushes input */
-#define flushout()	crmode();
+#define flushout()	cbreak();

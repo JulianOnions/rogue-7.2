@@ -340,7 +340,7 @@ tstp()
 	fflush(stdout);
 	kill(0, SIGTSTP);
 	signal(SIGTSTP, tstp);
-	crmode();
+	cbreak();
 	noecho();
 	clearok(curscr, TRUE);
 	touchwin(cw);
@@ -383,7 +383,7 @@ setup()
 		num_checks = 0;
 	}
 #endif
-	crmode();				/* Cbreak mode */
+	cbreak();				/* Cbreak mode */
 	noecho();				/* Echo off */
 }
 
