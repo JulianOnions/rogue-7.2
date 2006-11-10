@@ -33,6 +33,8 @@ main.o rip.o io.o command.o wizard.o: mach_dep.h
 
 global.o init.o wizard.o things.o: rogue.h
 
+$(OBJS): rogue_ext.h
+
 vers.o:	vers.c
 	$(CC) $(CFLAGS) $(VERSION) vers.c
 

@@ -6,16 +6,29 @@
 
 #include <ctype.h>
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * add_pack:
  * Pick up an object and add it to the pack.  If the argument is non-null
  * use it as the linked_list pointer instead of getting it off the ground.
  */
-add_pack(item, silent)
-reg struct linked_list *item;
-bool silent;
+
+extern int itemweight (struct object *wh);
+extern void msg (const char *fmt, ...);
+extern int _detach (register struct linked_list **list, register struct linked_list *item);
+extern int discard (register struct linked_list *item);
+extern int o_on (struct object *what, int bit);
+extern int setoflg (struct object *what, int bit);
+extern int updpack (int getmax);
+extern int money (void);
+extern void debug (char *errstr);
+extern int readchar (void);
+extern int whatis (struct linked_list *what);
+int cur_null (struct object *op);
+
+add_pack(struct linked_list *item, NCURSES_BOOL silent)
 {
     reg struct linked_list *ip, *lp;
     reg struct object *obj, *op;
@@ -178,9 +191,7 @@ picked_up:
  * inventory:
  *	Show what items are in a specific list
  */
-inventory(list, type)
-struct linked_list *list;
-int type;
+inventory(struct linked_list *list, int type)
 {
     reg struct linked_list *pc;
     reg struct object *obj;
@@ -220,8 +231,7 @@ int type;
  * pick_up:
  *	Add something to characters pack.
  */
-pick_up(ch)
-char ch;
+pick_up(char ch)
 {
     nochange = FALSE;
     switch(ch) {
@@ -246,7 +256,7 @@ char ch;
  * picky_inven:
  *	Allow player to inventory a single item
  */
-picky_inven()
+picky_inven(void)
 {
     reg struct linked_list *item;
     reg char ch, mch;
@@ -276,9 +286,7 @@ picky_inven()
  *	pick something out of a pack for a purpose
  */
 struct linked_list *
-get_item(purpose, type)
-char *purpose;
-int type;
+get_item(char *purpose, int type)
 {
     reg struct linked_list *obj, *pit, *savepit;
     struct object *pob;
@@ -393,8 +401,7 @@ int type;
  *	Get the character of a particular item in the pack
  */
 char
-pack_char(obj)
-reg struct object *obj;
+pack_char(struct object *obj)
 {
     reg struct linked_list *item;
     reg char c;
@@ -412,7 +419,7 @@ reg struct object *obj;
  * idenpack:
  *	Identify all the items in the pack
  */
-idenpack()
+idenpack(void)
 {
 	reg struct linked_list *pc;
 
@@ -425,8 +432,7 @@ idenpack()
  * del_pack:
  *	Take something out of the hero's pack
  */
-del_pack(what)
-reg struct linked_list *what;
+del_pack(struct linked_list *what)
 {
 	reg struct object *op;
 
@@ -447,8 +453,7 @@ reg struct linked_list *what;
  * cur_null:
  *	This updates cur_weapon etc for dropping things
  */
-cur_null(op)
-reg struct object *op;
+cur_null(struct object *op)
 {
 	if (op == cur_weapon)
 	    cur_weapon = NULL;

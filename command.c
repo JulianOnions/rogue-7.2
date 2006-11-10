@@ -8,18 +8,21 @@
 #include <signal.h>
 #include "rogue.h"
 #include "mach_dep.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * command:
  *	Process the user commands
  */
-command()
+
+
+command(void)
 {
     reg char ch;
     reg int ntimes = 1;		/* Number of player moves */
     static char countch, direction, newcount = FALSE;
-    extern int prntstats();
+    extern int prntstats(char prtype);
 
     if (pl_on(ISHASTE))
 	ntimes++;
@@ -231,7 +234,7 @@ command()
 			when CTRL('G') :	add_pass();
 			when 'M' : {
 			    int tlev;
-			    prbuf[0] = NULL;
+			    prbuf[0] = 0;
 			    msg("Which level? ");
 			    if(get_str(prbuf,cw) == NORM) {
 				tlev = atoi(prbuf);
@@ -367,7 +370,7 @@ void quit(int junk)
 	clear();
 	move(LINES-1, 0);
 	draw(stdscr);
-	score(purse, 1);
+	score(purse, 1, 0);
 	byebye(0);
     }
     else {
@@ -386,7 +389,7 @@ void quit(int junk)
  *	Player gropes about him to find hidden things.
  */
 
-search()
+search(void)
 {
     reg int x, y;
     reg char ch;
@@ -432,7 +435,7 @@ search()
  * help:
  *	Give single character help, or the whole mess if he wants it
  */
-help()
+help(void)
 {
     extern struct h_list helpstr[];
     reg struct h_list *strp;
@@ -489,7 +492,7 @@ help()
  * identify:
  *	Tell the player what a certain thing is.
  */
-identify()
+identify(void)
 {
     reg char ch, *str;
 
@@ -538,7 +541,7 @@ identify()
  *	He wants to go down a level
  */
 
-d_level()
+d_level(void)
 {
     if (winat(hero.y, hero.x) != STAIRS)
 	msg("I see no way down.");
@@ -557,7 +560,7 @@ d_level()
  *	He wants to go up a level
  */
 
-u_level()
+u_level(void)
 {
     if (winat(hero.y, hero.x) == STAIRS)  {
 	if (pl_on(ISHELD)) {
@@ -582,7 +585,7 @@ u_level()
 /*
  * Let him escape for a while
  */
-shell()
+shell(void)
 {
     reg int pid;
     reg char *sh;
@@ -631,7 +634,7 @@ shell()
  * call:
  *	Allow a user to call a potion, scroll, or ring something
  */
-call()
+call(void)
 {
     reg struct object *obj;
     reg struct linked_list *item;

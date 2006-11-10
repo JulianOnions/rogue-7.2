@@ -5,13 +5,16 @@
  */
 
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * quaff:
  *	Let the hero drink a potion
  */
-quaff()
+
+
+quaff(void)
 {
     reg struct object *obj;
     reg struct linked_list *item, *titem;
@@ -263,7 +266,7 @@ quaff()
 	p_guess[wh] = NULL;
     }
     else if(!p_know[wh] && p_guess[wh] == NULL) {
-	buf[0] = NULL;
+	buf[0] = 0;
 	msg("Call it: ");
 	if (get_str(buf, cw) == NORM) {
 	    p_guess[wh] = new(strlen(buf) + 1);

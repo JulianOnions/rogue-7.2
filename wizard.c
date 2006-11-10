@@ -9,14 +9,35 @@
 #include "rogue.h"
 #include <pwd.h>
 #include "mach_dep.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * whatis:
  *	What a certain object is
  */
-whatis(what)
-struct linked_list *what;
+
+extern int setoflg (struct object *what, int bit);
+extern void msg (const char *fmt, ...);
+extern int readchar (void);
+int makemons (void);
+extern int isatrap (char ch);
+int getbless (void);
+extern int init_weapon (struct object *weap, char type);
+extern int init_ring (struct object *what, NCURSES_BOOL fromwiz);
+extern int fix_stick (struct object *cur);
+extern int add_pack (struct linked_list *item, NCURSES_BOOL silent);
+extern int discard (register struct linked_list *item);
+extern int step_ok (char ch);
+extern int winat (int y, int x);
+extern int new_monster (struct linked_list *item, char type, struct coord *cp, NCURSES_BOOL treas);
+extern int look (NCURSES_BOOL wakeup);
+extern int rnd_room (void);
+extern int rnd_pos (struct room *rp, struct coord *cp);
+extern int light (struct coord *cp);
+extern int mon_index (char whichmon);
+
+whatis(struct linked_list *what)
 {
     reg struct object *obj;
     reg struct linked_list *item;
@@ -66,8 +87,7 @@ struct linked_list *what;
  * create_obj:
  *	Create any object for wizard or scroll (almost)
  */
-create_obj(fscr)
-bool fscr;
+create_obj(NCURSES_BOOL fscr)
 {
     reg struct linked_list *item;
     reg struct object *obj;
@@ -300,7 +320,7 @@ bool fscr;
  * getbless:
  *	Get a blessing for a wizards object
  */
-getbless()
+getbless(void)
 {
 	reg char bless;
 
@@ -318,7 +338,7 @@ getbless()
  * makemons:
  *	Make a monster for the wizard
  */
-makemons()
+makemons(void)
 {
 	reg struct thing *it;
 	reg struct linked_list *item;
@@ -359,7 +379,7 @@ makemons()
  * telport:
  *	Bamf the hero someplace else
  */
-teleport()
+teleport(void)
 {
     reg int rm;
     struct coord c;
@@ -395,7 +415,7 @@ teleport()
  *	See if user knows password
  */
 
-passwd()
+passwd(void)
 {
     reg char *sp, c;
     char buf[LINLEN], *crypt();

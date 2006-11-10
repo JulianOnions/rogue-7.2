@@ -5,15 +5,21 @@
  */
 
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * detach:
  *	Takes an item out of whatever linked list it might be in
  */
 
-_detach(list, item)
-register struct linked_list **list, *item;
+
+int discard (register struct linked_list *item);
+extern void msg (const char *fmt, ...);
+extern void debug (char *errstr);
+extern int fatal (char *s);
+
+_detach(register struct linked_list **list, register struct linked_list *item)
 {
     if (*list == item)
 	*list = next(item);
@@ -28,8 +34,7 @@ register struct linked_list **list, *item;
  *	add an item to the head of a list
  */
 
-_attach(list, item)
-register struct linked_list **list, *item;
+_attach(register struct linked_list **list, register struct linked_list *item)
 {
     if (*list != NULL)
     {
@@ -51,8 +56,7 @@ register struct linked_list **list, *item;
  *	Throw the whole blamed thing away
  */
 
-_free_list(ptr)
-register struct linked_list **ptr;
+_free_list(register struct linked_list **ptr)
 {
     register struct linked_list *item;
 
@@ -68,8 +72,7 @@ register struct linked_list **ptr;
  *	free up an item
  */
 
-discard(item)
-register struct linked_list *item;
+discard(register struct linked_list *item)
 {
     FREE(item->l_data);
     FREE(item);
@@ -82,8 +85,7 @@ register struct linked_list *item;
  */
 
 struct linked_list *
-new_item(size)
-int size;
+new_item(int size)
 {
     register struct linked_list *item;
 
@@ -97,8 +99,7 @@ int size;
 }
 
 char *
-new(size)
-int size;
+new(int size)
 {
     register char *space = ALLOC(size);
 

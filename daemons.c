@@ -5,14 +5,33 @@
  */
 
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * doctor:
  *	A healing daemon that restores hit points after rest
  */
-doctor(fromfuse)
-int fromfuse;
+
+extern int isring (int hand, int ring);
+extern int daemon (int (*func) (/* ??? */), int arg, int type);
+extern int roll (int number, int sides);
+extern int wanderer (void);
+extern int kill_daemon (int (*func) (/* ??? */));
+extern int fuse (int (*func) (/* ??? */), int arg, int time, int type);
+extern void msg (const char *fmt, ...);
+extern int extinguish (int (*func) (/* ??? */));
+extern int light (struct coord *cp);
+extern int ring_eat (int hand);
+extern int updpack (int getmax);
+extern int wghtchk (int type);
+extern int chg_abil (register int what, register int amt, register int how);
+extern void debug (char *errstr);
+extern int rnd_room (void);
+extern int rnd_pos (struct room *rp, struct coord *cp);
+extern int winat (int y, int x);
+
+doctor(int fromfuse)
 {
 	reg int lv, ohp, ccon;
 
@@ -50,8 +69,7 @@ int fromfuse;
  * Swander:
  *	Called when it is time to start rolling for wandering monsters
  */
-swander(fromfuse)
-int fromfuse;
+swander(int fromfuse)
 {
 	daemon(rollwand, TRUE, BEFORE);
 }
@@ -61,8 +79,7 @@ int fromfuse;
  * rollwand:
  *	Called to ng monster starts up
  */
-rollwand(fromfuse)
-int fromfuse;
+rollwand(int fromfuse)
 {
 	static int between = 0;
 
@@ -82,8 +99,7 @@ int fromfuse;
  * unconfuse:
  *	Release the poor player from his confusion
  */
-unconfuse(fromfuse)
-int fromfuse;
+unconfuse(int fromfuse)
 {
 	if (pl_on(ISHUH))
 	    msg("You feel less confused now");
@@ -95,8 +111,7 @@ int fromfuse;
  * unsee:
  *	He lost his see invisible power
  */
-unsee(fromfuse)
-int fromfuse;
+unsee(int fromfuse)
 {
 	player.t_flags &= ~CANSEE;
 }
@@ -106,10 +121,9 @@ int fromfuse;
  * sight:
  *	He gets his sight back
  */
-sight(fromfuse)
-int fromfuse;
+sight(int fromfuse)
 {
-	int sight();
+	int sight(int fromfuse);
 
 	if (pl_on(ISBLIND)) {
 	    extinguish(sight);
@@ -124,8 +138,7 @@ int fromfuse;
  * nohaste:
  *	End the hasting
  */
-nohaste(fromfuse)
-int fromfuse;
+nohaste(int fromfuse)
 {
 	if (pl_on(ISHASTE))
 	    msg("You feel yourself slowing down.");
@@ -136,8 +149,7 @@ int fromfuse;
 /*
  * digest the hero's food
  */
-stomach(fromfuse)
-int fromfuse;
+stomach(int fromfuse)
 {
 	reg int oldfood, old_hunger;
 
@@ -177,8 +189,7 @@ int fromfuse;
  * noteth:
  *	Hero is no longer etherereal
  */
-noteth(fromfuse)
-int fromfuse;
+noteth(int fromfuse)
 {
 	if (pl_on(ISETHREAL))
 	    msg("You begin to feel more corporeal.");
@@ -189,8 +200,7 @@ int fromfuse;
  * sapem:
  *	Sap the hero's life away
  */
-sapem(fromfuse)
-int fromfuse;
+sapem(int fromfuse)
 {
 
 	chg_abil(rnd(4) + 1, -1, TRUE);
@@ -202,8 +212,7 @@ int fromfuse;
  * notslow:
  *	Restore the hero's normal speed
  */
-notslow(fromfuse)
-int fromfuse;
+notslow(int fromfuse)
 {
 	player.t_flags &= ~ISSLOW;
 }
@@ -212,8 +221,7 @@ int fromfuse;
  * notfight:
  *	Hero is no longer fighting
  */
-notfight(fromfuse)
-int fromfuse;
+notfight(int fromfuse)
 {
 	isfight = FALSE;
 }
@@ -222,8 +230,7 @@ int fromfuse;
  * notregen:
  *	Hero is no longer regenerative
  */
-notregen(fromfuse)
-int fromfuse;
+notregen(int fromfuse)
 {
 	if (pl_on(ISREGEN))
 	    msg("You no longer feel bolstered.");
@@ -235,8 +242,7 @@ int fromfuse;
  * notinvinc:
  *	Hero not invincible any more
  */
-notinvinc(fromfuse)
-int fromfuse;
+notinvinc(int fromfuse)
 {
 	if (pl_on(ISINVINC))
 	    msg("You no longer feel invincible.");
@@ -249,11 +255,10 @@ int fromfuse;
  *	Check that the stariway down is in a room. If not, then
  *	put it somewhere.
  */
-chkstairs(fromfuse)
-int fromfuse;
+chkstairs(int fromfuse)
 {
 	reg int cnt, rm;
-	int chkstairs();
+	int chkstairs(int fromfuse);
 
 	if(roomin(&stairs) == NULL) {
 	    sprintf(errbuf,"Stairs not in a room: %d",fromfuse);

@@ -6,13 +6,20 @@
 
 #include "rogue.h"
 #include <ctype.h>
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * displevl:
  *	Display detailed level for wizard and scroll
  */
-displevl()
+
+extern int isatrap (char ch);
+extern int illeg_ch (char ch);
+extern int updpack (int getmax);
+extern void msg (const char *fmt, ...);
+
+displevl(void)
 {
 	reg char ch, mch;
 	reg int i,j;
@@ -67,7 +74,7 @@ displevl()
  * dispmons:
  *	Show monsters for wizard and potion
  */
-dispmons()
+dispmons(void)
 {
 	reg int i,j;
 	reg char ch;
@@ -97,8 +104,7 @@ dispmons()
  * prntstats:
  *	Print hero info dexterity, constitution, wisdom, encumberence
  */
-prntstats(prtype)
-char prtype;
+prntstats(char prtype)
 {
 	reg int totwght, carwght, wght;
 	reg struct stats *st;
@@ -123,8 +129,7 @@ char prtype;
  * winat:
  *	Get whatever character is at a location on the screen
  */
-winat(y, x)
-int x, y;
+winat(int y, int x)
 {
 	reg char ch;
 
@@ -141,8 +146,7 @@ int x, y;
  *	Returns TRUE if the player's flag is set
  */
 long
-pl_on(what)
-long what;
+pl_on(long int what)
 {
 	return (player.t_flags & what);
 }
@@ -153,8 +157,7 @@ long what;
  *	Returns TRUE when player's flag is reset
  */
 long
-pl_off(what)
-long what;
+pl_off(long int what)
 {
 	return (!(player.t_flags & what));
 }
@@ -164,9 +167,7 @@ long what;
  * o_on:
  *	Returns TRUE in the objects flag is set
  */
-o_on(what,bit)
-struct object *what;
-int bit;
+o_on(struct object *what, int bit)
 {
 	return (what->o_flags & bit);
 }
@@ -176,9 +177,7 @@ int bit;
  * o_off:
  *	Returns TRUE is the objects flag is reset
  */
-o_off(what,bit)
-struct object *what;
-int bit;
+o_off(struct object *what, int bit)
 {
 	return (!(what->o_flags & bit));
 }
@@ -188,9 +187,7 @@ int bit;
  * setoflg:
  *	Set the specified flag for the object
  */
-setoflg(what,bit)
-struct object *what;
-int bit;
+setoflg(struct object *what, int bit)
 {
 	what->o_flags |= bit;
 }
@@ -200,9 +197,7 @@ int bit;
  * resoflg:
  *	Reset the specified flag for the object
  */
-resoflg(what,bit)
-struct object *what;
-int bit;
+resoflg(struct object *what, int bit)
 {
 	what->o_flags &= ~bit;
 }

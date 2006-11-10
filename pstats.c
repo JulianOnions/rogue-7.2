@@ -6,17 +6,28 @@
  */
 
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 
 /*
  * chg_hpt:
  *	Changes players hit points
  */
-chg_hpt(howmany,alsomax,whichmon)
-int howmany;
-char whichmon;
-bool alsomax;
+
+extern int death (char monst);
+int chg_abil (register int what, register int amt, register int how);
+int updabil (register int what, register int amt, register struct real *pst, register int how);
+extern int updpack (int getmax);
+extern int wghtchk (int type);
+extern void msg (const char *fmt, ...);
+extern int extinguish (int (*func) (/* ??? */));
+extern int fuse (int (*func) (/* ??? */), int arg, int time, int type);
+extern int roll (int number, int sides);
+extern int hitweight (void);
+int hungdam (void);
+
+chg_hpt(int howmany, NCURSES_BOOL alsomax, char whichmon)
 {
 	nochange = FALSE;
 	if(alsomax)
@@ -31,8 +42,7 @@ bool alsomax;
  * rchg_str:
  *	Update the players real strength 
  */
-rchg_str(amt)
-int amt;
+rchg_str(int amt)
 {
 	chg_abil(STR,amt,TRUE);
 }
@@ -41,8 +51,7 @@ int amt;
  * chg_abil:
  *	Used to modify the hero's abilities
  */
-chg_abil(what,amt,how)
-register int amt, what, how;
+chg_abil(register int what, register int amt, register int how)
 {
 	if (amt == 0)
 	    return;
@@ -60,9 +69,7 @@ register int amt, what, how;
  * updabil:
  *	Do the actual abilities updating
  */
-updabil(what, amt, pst, how)
-register struct real *pst;
-register int what, amt, how;
+updabil(register int what, register int amt, register struct real *pst, register int how)
 {
 	register int *wh, *mx, *mr;
 	struct real *mst, *msr;
@@ -121,8 +128,7 @@ register int what, amt, how;
  * add_haste:
  *	add a haste to the player
  */
-add_haste(potion)
-bool potion;
+add_haste(NCURSES_BOOL potion)
 {
     if (pl_on(ISHASTE)) {
 	msg("You faint from exhaustion.");
@@ -143,9 +149,7 @@ bool potion;
  * getpdex:
  *	Gets players added dexterity for fighting
  */
-getpdex(edex,heave)
-reg int edex;
-bool heave;
+getpdex(int edex, NCURSES_BOOL heave)
 {
 	if(heave) {		/* an object was thrown here */
 		switch(edex) {
@@ -178,8 +182,7 @@ ult: return -3;
  * getpwis:
  *	Get a players wisdom for fighting
  */
-getpwis(ewis)
-reg int ewis;
+getpwis(int ewis)
 {
 	switch(ewis) {
 		case 18: return 4;
@@ -205,8 +208,7 @@ reg int ewis;
  * getpcon:
  *	Get added hit points from players constitution
  */
-getpcon(econ)
-reg int econ;
+getpcon(int econ)
 {
 	switch(econ) {
 		case 18: return 4;
@@ -233,8 +235,7 @@ reg int econ;
  * str_plus:
  *	compute bonus/penalties for strength on the "to hit" roll
  */
-str_plus(str)
-reg int str;
+str_plus(int str)
 {
 	reg int hitplus = 0;
 
@@ -260,9 +261,8 @@ reg int str;
  * add_dam:
  *	Compute additional damage done depending on strength
  */
- add_dam(str)
- reg int str;
- {
+ add_dam(int str)
+{
 	reg int exdam = 0;
 
 	if (str == 24)		/* 24 */
@@ -291,7 +291,7 @@ reg int str;
  * hungdam:
  *	Calculate damage depending on players hungry state
  */
-hungdam()
+hungdam(void)
 {
 	reg int howmuch;
 

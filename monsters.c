@@ -6,7 +6,8 @@
 
 #include "rogue.h"
 #include <ctype.h>
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * randmonster:
@@ -14,9 +15,25 @@
  *	the meaner the monster.
  */
 
-randmonster(wander,baddie)
-bool wander;
-bool baddie;		/* TRUE when from a polymorph stick */
+
+extern void debug (char *errstr);
+extern int _attach (register struct linked_list **list, register struct linked_list *item);
+extern int roll (int number, int sides);
+extern int iswearing (int ring);
+extern int runto (struct coord *runner, struct coord *spot);
+extern int rnd_room (void);
+extern int rnd_pos (struct room *rp, struct coord *cp);
+extern int step_ok (char ch);
+extern void msg (const char *fmt, ...);
+extern int save (int which);
+extern int lengthen (int (*func) (/* ??? */), int xtime);
+extern int fuse (int (*func) (/* ??? */), int arg, int time, int type);
+extern int readchar (void);
+extern int removelist (struct coord *mp, struct linked_list *item);
+
+randmonster(NCURSES_BOOL wander, NCURSES_BOOL baddie)
+            
+            		/* TRUE when from a polymorph stick */
 {
 	reg int i, oktocreate;
 
@@ -62,8 +79,7 @@ bool baddie;		/* TRUE when from a polymorph stick */
  * mon_index:
  *	This returns an index to 'whichmon'
  */
-mon_index(whichmon)
-char whichmon;
+mon_index(char whichmon)
 {
 	if (!isalpha(whichmon)) {
 	    sprintf(errbuf, "bad monster type in mon_index: %s.",
@@ -81,7 +97,7 @@ char whichmon;
  * lev_mon:
  *	This gets all monsters possible on this level
  */
-lev_mon()
+lev_mon(void)
 {
     reg int i,lev;
 
@@ -106,11 +122,7 @@ lev_mon()
  * new_monster:
  *	Pick a new monster and add it to the list
  */
-new_monster(item, type, cp, treas)
-struct linked_list *item;
-char type;
-reg struct coord *cp;
-bool treas;
+new_monster(struct linked_list *item, char type, struct coord *cp, NCURSES_BOOL treas)
 {
     reg struct thing *tp;
     reg struct monster *mp;
@@ -178,7 +190,7 @@ bool treas;
  *	A wandering monster has awakened and is headed for the player
  */
 
-wanderer()
+wanderer(void)
 {
     reg int i, ch;
     reg struct room *rp, *hr = roomin(&hero);
@@ -207,8 +219,7 @@ wanderer()
  * what to do when the hero steps next to a monster
  */
 struct linked_list *
-wake_monster(y, x)
-int y, x;
+wake_monster(int y, int x)
 {
     reg struct thing *tp;
     reg struct linked_list *it;
@@ -265,7 +276,7 @@ int y, x;
  * genocide:
  *	Eradicate a monster forevermore
  */
-genocide()
+genocide(void)
 {
     reg struct linked_list *ip;
     reg struct thing *mp;

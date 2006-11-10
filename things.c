@@ -7,17 +7,37 @@
 
 #include <ctype.h>
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * inv_name:
  *	return the name of something as it would appear in an
  *	inventory.
  */
+
+extern int o_on (struct object *what, int bit);
+extern void debug (char *errstr);
+extern void msg (const char *fmt, ...);
+int dropcheck (struct object *op);
+extern int _detach (register struct linked_list **list, register struct linked_list *item);
+extern int discard (register struct linked_list *item);
+extern int fall (struct linked_list *item, NCURSES_BOOL pr);
+extern int _attach (register struct linked_list **list, register struct linked_list *item);
+extern int updpack (int getmax);
+extern int cur_null (struct object *op);
+extern int waste_time (void);
+extern int toss_ring (struct object *what);
+int pick_one (struct magic_item *magic, int nitems);
+int extras (void);
+extern int init_weapon (struct object *weap, char type);
+extern int setoflg (struct object *what, int bit);
+extern int init_ring (struct object *what, NCURSES_BOOL fromwiz);
+extern int fix_stick (struct object *cur);
+extern int author (void);
+
 char *
-inv_name(obj, drop)
-reg struct object *obj;
-reg bool drop;
+inv_name(struct object *obj, NCURSES_BOOL drop)
 {
     reg char *pb;
     reg int wh;
@@ -145,7 +165,7 @@ reg bool drop;
  * money:
  *	Add to characters purse
  */
-money()
+money(void)
 {
     reg struct room *rp;
 
@@ -167,8 +187,7 @@ money()
  * drop:
  *	put something down
  */
-drop(item)
-struct linked_list *item;
+drop(struct linked_list *item)
 {
     reg char ch;
     reg struct linked_list *ll, *nll;
@@ -240,8 +259,7 @@ struct linked_list *item;
  * dropcheck:
  *	Do special checks for dropping or unweilding|unwearing|unringing
  */
-dropcheck(op)
-reg struct object *op;
+dropcheck(struct object *op)
 {
     if (op == NULL)
 	return TRUE;
@@ -279,8 +297,7 @@ reg struct object *op;
  *	Return a new thing
  */
 struct linked_list *
-new_thing(treas)
-bool treas;
+new_thing(NCURSES_BOOL treas)
 {
     reg struct linked_list *item;
     reg struct object *cur;
@@ -378,7 +395,7 @@ bool treas;
  * extras:
  *	Return the number of extra items to be created
  */
-extras()
+extras(void)
 {
 	reg int i;
 
@@ -395,9 +412,7 @@ extras()
 /*
  * pick an item out of a list of nitems possible magic items
  */
-pick_one(magic, nitems)
-reg struct magic_item *magic;
-int nitems;
+pick_one(struct magic_item *magic, int nitems)
 {
     reg struct magic_item *end;
     reg int i;

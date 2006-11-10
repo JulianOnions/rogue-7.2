@@ -15,7 +15,8 @@
 #include <pwd.h>
 #include "mach_dep.h"
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 static char *rip[] = {
 "                       __________",
@@ -34,21 +35,29 @@ static char *rip[] = {
 };
 #define RIP_LINES (sizeof rip / (sizeof (char *)))
 
-char	*killname();
+char	*killname(char monst);
 
 /*
  * death:
  *	Do something really fun when he dies
  */
 
-death(monst)
-reg char monst;
+
+void score (int amount, int aflag, char monst);
+extern int idenpack (void);
+extern int author (void);
+extern int encread (char *start, unsigned int size, int inf);
+extern int encwrite (char *start, unsigned int size, FILE *outf);
+extern int get_worth (struct object *obj);
+extern int mon_index (char whichmon);
+
+death(char monst)
 {
     reg char dp, *killer;
     reg struct tm *lt;
     time_t date;
     char buf[LINLEN];
-    struct tm *localtime();
+    struct tm *localtime(const time_t *);
 
     time(&date);
     lt = localtime(&date);
@@ -138,7 +147,7 @@ void score(int amount, int aflag, char monst)
 	scp->sc_level = rand();
 	scp->sc_monster = rand();
 	scp->sc_uid = rand();
-	scp->sc_date[0] = NULL;
+	scp->sc_date[0] = 0;
     }
 
 
@@ -199,7 +208,7 @@ void score(int amount, int aflag, char monst)
 	    }
 	    printf(" [Exp: %d/%ld]",scp->sc_explvl,scp->sc_exppts);
 	    if (prflags == 1) {
-		struct passwd *pp, *getpwuid();
+		struct passwd *pp, *getpwuid(__uid_t);
 
 		if ((pp = getpwuid(scp->sc_uid)) == NULL)
 		    printf(" (%d)", scp->sc_uid);
@@ -219,7 +228,7 @@ void score(int amount, int aflag, char monst)
 		    top_ten[9].sc_flags = rand();
 		    top_ten[9].sc_level = rand();
 		    top_ten[9].sc_monster = rand();
-		    top_ten[9].sc_date[0] = NULL;
+		    top_ten[9].sc_date[0] = 0;
 		    scp--;
 		}
 	    }
@@ -235,7 +244,7 @@ void score(int amount, int aflag, char monst)
     fclose(outf);
 }
 
-total_winner()
+total_winner(void)
 {
     reg struct linked_list *item;
     reg struct object *obj;
@@ -285,8 +294,7 @@ total_winner()
 }
 
 char *
-killname(monst)
-reg char monst;
+killname(char monst)
 {
     if (isalpha(monst))
 	return monsters[mon_index(monst)].m_name;

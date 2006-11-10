@@ -6,13 +6,40 @@
 
 #include <ctype.h>
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * read_scroll:
  *	Let the hero read a scroll
  */
-read_scroll()
+
+extern void msg (const char *fmt, ...);
+extern int del_pack (struct linked_list *what);
+extern int idenpack (void);
+extern int chg_abil (register int what, register int amt, register int how);
+extern int light (struct coord *cp);
+extern int o_off (struct object *what, int bit);
+extern int o_on (struct object *what, int bit);
+extern int resoflg (struct object *what, int bit);
+extern int step_ok (char ch);
+extern int winat (int y, int x);
+extern int new_monster (struct linked_list *item, char type, struct coord *cp, NCURSES_BOOL treas);
+extern int randmonster (NCURSES_BOOL wander, NCURSES_BOOL baddie);
+extern int whatis (struct linked_list *what);
+extern int displevl (void);
+extern int teleport (void);
+extern int setoflg (struct object *what, int bit);
+extern int aggravate (void);
+extern int genocide (void);
+extern int new_level (NCURSES_BOOL post);
+extern int chg_hpt (int howmany, NCURSES_BOOL alsomax, char whichmon);
+extern int roll (int number, int sides);
+extern int create_obj (NCURSES_BOOL fscr);
+extern int look (NCURSES_BOOL wakeup);
+extern int get_str (register char *opt, WINDOW *awin);
+
+read_scroll(void)
 {
     reg struct object *obj;
     reg struct linked_list *item;
@@ -399,7 +426,7 @@ read_scroll()
 	s_guess[wh] = NULL;
     }
     else if(!s_know[wh] && s_guess[wh]==NULL) {
-	buf[0] = NULL;
+	buf[0] = 0;
 	msg("Call it: ");
 	if (get_str(buf, cw) == NORM) {
 	    s_guess[wh] = new(strlen(buf) + 1);

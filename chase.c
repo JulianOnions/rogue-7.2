@@ -5,7 +5,7 @@
  */
 
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
 
 struct coord ch_ret;			/* Where chasing takes you */
 
@@ -13,7 +13,16 @@ struct coord ch_ret;			/* Where chasing takes you */
  * runners:
  *	Make all the running monsters move.
  */
-runners()
+
+int do_chase (struct thing *th);
+int chase (struct thing *tp, struct coord *ee);
+extern int attack (struct thing *mp);
+int cansee (int y, int x);
+int diag_ok (struct coord *sp, struct coord *ep);
+extern int winat (int y, int x);
+extern int step_ok (char ch);
+
+runners(void)
 {
     reg struct linked_list *item;
     reg struct thing *tp;
@@ -35,8 +44,7 @@ runners()
  * do_chase:
  *	Make one thing chase another.
  */
-do_chase(th)
-reg struct thing *th;
+do_chase(struct thing *th)
 {
     reg struct room *rer, *ree;
     reg int mindist = 32767, i, dist;
@@ -108,9 +116,7 @@ reg struct thing *th;
  * runto:
  *	Set a monster running after something
  */
-runto(runner, spot)
-reg struct coord *runner;
-struct coord *spot;
+runto(struct coord *runner, struct coord *spot)
 {
     reg struct linked_list *item;
     reg struct thing *tp;
@@ -132,9 +138,7 @@ struct coord *spot;
  *	chasee(ee).  Returns TRUE if we want to keep on chasing later
  *	FALSE if we reach the goal.
  */
-chase(tp, ee)
-struct thing *tp;
-struct coord *ee;
+chase(struct thing *tp, struct coord *ee)
 {
     reg int x, y;
     reg int dist, thisdist;
@@ -223,8 +227,7 @@ struct coord *ee;
  *	in any room.
  */
 struct room *
-roomin(cp)
-reg struct coord *cp;
+roomin(struct coord *cp)
 {
     reg struct room *rp;
 
@@ -240,8 +243,7 @@ reg struct coord *cp;
  *	Find the monster from his coordinates
  */
 struct linked_list *
-find_mons(y, x)
-reg int y, x;
+find_mons(int y, int x)
 {
     reg struct linked_list *item;
     reg struct thing *th;
@@ -259,8 +261,7 @@ reg int y, x;
  * diag_ok:
  *	Check to see if the move is legal if it is diagonal
  */
-diag_ok(sp, ep)
-reg struct coord *sp, *ep;
+diag_ok(struct coord *sp, struct coord *ep)
 {
     if (ep->x == sp->x || ep->y == sp->y)
 	return TRUE;
@@ -272,8 +273,7 @@ reg struct coord *sp, *ep;
  * cansee:
  *	returns true if the hero can see a certain coordinate.
  */
-cansee(y, x)
-reg int y, x;
+cansee(int y, int x)
 {
     reg struct room *rer;
     struct coord tp;

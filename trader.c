@@ -5,13 +5,30 @@
  */
 
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * do_post:
  *	Put a trading post room and stuff on the screen
  */
-do_post()
+
+extern int _free_list (register struct linked_list **ptr);
+extern int draw_room (struct room *rp);
+extern int roll (int number, int sides);
+extern int _attach (register struct linked_list **list, register struct linked_list *item);
+extern int setoflg (struct object *what, int bit);
+extern int rnd_pos (struct room *rp, struct coord *cp);
+int trans_line (void);
+int open_market (void);
+int get_worth (struct object *obj);
+extern void msg (const char *fmt, ...);
+extern int readchar (void);
+extern int add_pack (struct linked_list *item, NCURSES_BOOL silent);
+extern int drop (struct linked_list *item);
+extern int magring (struct object *what);
+
+do_post(void)
 {
 	struct coord tp;
 	reg int i;
@@ -59,7 +76,7 @@ do_post()
  * price_it:
  *	Price the object that the hero stands on
  */
-price_it()
+price_it(void)
 {
 	static char *bargain[] = {
 	    "great bargain",
@@ -95,7 +112,7 @@ price_it()
  * buy_it:
  *	Buy the item on which the hero stands
  */
-buy_it()
+buy_it(void)
 {
 	reg int wh;
 	char buff[LINLEN];
@@ -138,7 +155,7 @@ buy_it()
 	    ++trader;			/* another transaction */
 	    trans_line();		/* show remaining deals */
 	    curprice = -1;		/* reset stuff */
-	    curpurch[0] = NULL;
+	    curpurch[0] = 0;
 	}
 }
 
@@ -146,7 +163,7 @@ buy_it()
  * sell_it:
  *	Sell an item to the trading post
  */
-sell_it()
+sell_it(void)
 {
 	reg struct linked_list *item;
 	reg struct object *obj;
@@ -191,7 +208,7 @@ sell_it()
  * open_market:
  *	Retruns TRUE when ok do to transacting
  */
-open_market()
+open_market(void)
 {
 	if (trader >= MAXPURCH) {
 	    msg("The market is closed. The stairs are that-a-way.");
@@ -207,8 +224,7 @@ open_market()
  * 	Return the name for this type of object
  */
 char *
-typ_name(obj)
-reg struct object *obj;
+typ_name(struct object *obj)
 {
 	static char buff[20];
 	reg int wh;
@@ -235,8 +251,7 @@ reg struct object *obj;
  * get_worth:
  *	Calculate an objects worth in gold
  */
-get_worth(obj)
-reg struct object *obj;
+get_worth(struct object *obj)
 {
 	reg int worth, wh;
 
@@ -290,7 +305,7 @@ reg struct object *obj;
  * trans_line:
  *	Show how many transactions the hero has left
  */
-trans_line()
+trans_line(void)
 {
 	sprintf(prbuf,"You have %d transactions remaining.",
 		MAXPURCH - trader);

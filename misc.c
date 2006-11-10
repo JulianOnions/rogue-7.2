@@ -6,16 +6,29 @@
 
 #include "rogue.h"
 #include <ctype.h>
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * tr_name:
  *	print the name of a trap
  */
 
+
+extern int show (int y, int x);
+extern int isatrap (char ch);
+extern int iswearing (int ring);
+int secretdoor (int y, int x);
+extern void msg (const char *fmt, ...);
+extern int o_on (struct object *what, int bit);
+extern int del_pack (struct linked_list *what);
+extern int check_level (void);
+extern int updpack (int getmax);
+extern int runto (struct coord *runner, struct coord *spot);
+extern int readchar (void);
+
 char *
-tr_name(ch)
-char ch;
+tr_name(char ch)
 {
     reg char *s;
 
@@ -47,8 +60,7 @@ char ch;
  *	A quick glance all around the player
  */
 
-look(wakeup)
-bool wakeup;
+look(NCURSES_BOOL wakeup)
 {
     reg int x, y;
     reg char ch;
@@ -178,8 +190,7 @@ bool wakeup;
  *	Figure out what a secret door looks like.
  */
 
-secretdoor(y, x)
-reg int y, x;
+secretdoor(int y, int x)
 {
     reg int i;
     reg struct room *rp;
@@ -205,9 +216,7 @@ reg int y, x;
  */
 
 struct linked_list *
-find_obj(y, x)
-reg int y;
-int x;
+find_obj(int y, int x)
 {
     reg struct linked_list *obj;
     reg struct object *op;
@@ -225,7 +234,7 @@ int x;
  *	She wants to eat something, so let her try
  */
 
-eat()
+eat(void)
 {
     reg struct linked_list *item;
     reg struct object *obj;
@@ -273,7 +282,7 @@ eat()
  *	aggravate all the monsters on this level
  */
 
-aggravate()
+aggravate(void)
 {
     reg struct linked_list *mi;
 
@@ -285,8 +294,7 @@ aggravate()
  * for printfs: if string starts with a vowel, return "n" for an "an"
  */
 char *
-vowelstr(str)
-reg char *str;
+vowelstr(char *str)
 {
     switch (*str) {
 	case 'a':
@@ -303,8 +311,7 @@ reg char *str;
 /* 
  * see if the object is one of the currently used items
  */
-is_current(obj)
-reg struct object *obj;
+is_current(struct object *obj)
 {
     if (obj == NULL)
 	return FALSE;
@@ -319,7 +326,7 @@ reg struct object *obj;
 /*
  * set up the direction co_ordinate for use in varios "prefix" commands
  */
-get_dir()
+get_dir(void)
 {
     reg char *prompt;
     reg bool gotit;
@@ -353,8 +360,7 @@ get_dir()
 }
 
 char
-lower(c)
-char c;
+lower(char c)
 {
 	return (isupper(c) ? c - 'A' + 'a' : c);
 }

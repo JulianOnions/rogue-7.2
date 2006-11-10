@@ -6,7 +6,8 @@
 
 #include <ctype.h>
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * description of an option and what to do with it
@@ -19,7 +20,7 @@ struct optstruct {
 
 typedef struct optstruct	OPTION;
 
-int	put_str(), get_str();
+int	put_str(), get_str(register char *opt, WINDOW *awin);
 
 OPTION	optlist[] = {
     {"name", "Name: ", whoami },
@@ -31,7 +32,11 @@ OPTION	optlist[] = {
 /*
  * print and then set options from the terminal
  */
-option()
+
+extern int readchar (void);
+int strucpy (register char *s1, register char *s2, register int len);
+
+option(void)
 {
     register OPTION	*op;
     register int	wh;
@@ -79,9 +84,7 @@ option()
  * get_str:
  *	Set a string option
  */
-get_str(opt, awin)
-register char *opt;
-WINDOW *awin;
+get_str(register char *opt, WINDOW *awin)
 {
     register char *sp;
     register int c, oy, ox;
@@ -95,7 +98,7 @@ WINDOW *awin;
     for (sp = buf; (c=readchar()) != '\n' && c != '\r' && c != ESCAPE;
       wclrtoeol(awin), draw(awin)) {
 	if (( (int)sp - (int)buf ) >= 50) {
-	    *sp = NULL;			/* line was too long */
+	    *sp = 0;			/* line was too long */
 	    strcpy(opt,buf);
 	    mvwaddstr(awin, 0, 0, "Name was truncated --More--");
 	    wclrtoeol(awin);
@@ -139,7 +142,7 @@ WINDOW *awin;
 	*sp++ = c;
 	waddstr(awin, unctrl(c));
     }
-    *sp = NULL;
+    *sp = 0;
     if(sp > buf)	/* only change option if something was typed */
 	strucpy(opt, buf, strlen(buf));
     wmove(awin, oy, ox);
@@ -164,8 +167,7 @@ WINDOW *awin;
  * or the end of the entire option string.
  */
 
-parse_opts(str)
-register char *str;
+parse_opts(register char *str)
 {
     register char *sp;
     register OPTION *op;
@@ -205,9 +207,7 @@ register char *str;
 /*
  * copy string using unctrl for things
  */
-strucpy(s1, s2, len)
-register char *s1, *s2;
-register int len;
+strucpy(register char *s1, register char *s2, register int len)
 {
     register char *sp;
 

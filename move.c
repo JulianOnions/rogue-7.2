@@ -6,7 +6,8 @@
 
 #include <ctype.h>
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * Used to hold the new hero position
@@ -19,8 +20,36 @@ struct coord nh;
  *	Start the hero running
  */
 
-do_run(ch)
-char ch;
+
+extern void msg (const char *fmt, ...);
+extern int iswearing (int ring);
+extern int diag_ok (struct coord *sp, struct coord *ep);
+extern int winat (int y, int x);
+extern int dead_end (char ch);
+int show (int y, int x);
+int isatrap (char ch);
+int be_trapped (struct coord *tc);
+extern int illeg_ch (char ch);
+extern int teleport (void);
+int light (struct coord *cp);
+extern int fight (struct coord *mp, char mn, struct object *weap, NCURSES_BOOL thrown);
+extern int new_level (NCURSES_BOOL post);
+extern int getpdex (int edex, NCURSES_BOOL heave);
+extern int chg_hpt (int howmany, NCURSES_BOOL alsomax, char whichmon);
+extern int roll (int number, int sides);
+extern int init_weapon (struct object *weap, char type);
+extern int setoflg (struct object *what, int bit);
+extern int fall (struct linked_list *item, NCURSES_BOOL pr);
+extern int save (int which);
+extern int chg_abil (register int what, register int amt, register int how);
+extern int o_off (struct object *what, int bit);
+extern int resoflg (struct object *what, int bit);
+extern int magring (struct object *what);
+extern int death (char monst);
+extern void debug (char *errstr);
+extern int step_ok (char ch);
+
+do_run(char ch)
 {
     running = TRUE;
     after = FALSE;
@@ -33,8 +62,7 @@ char ch;
  *	consequences (fighting, picking up, etc.)
  */
 
-do_move(dy, dx)
-int dy, dx;
+do_move(int dy, int dx)
 {
     reg int ch;
 
@@ -190,8 +218,7 @@ int dy, dx;
  * If it is dark, remove anything that might move.
  */
 
-light(cp)
-struct coord *cp;
+light(struct coord *cp)
 {
     reg struct room *rp;
     reg int j, k, x, y;
@@ -261,8 +288,7 @@ struct coord *cp;
  * show:
  *	returns what a certain thing will display as to the un-initiated
  */
-show(y, x)
-reg int y, x;
+show(int y, int x)
 {
     reg char ch = winat(y, x);
     reg struct linked_list *it;
@@ -297,8 +323,7 @@ reg int y, x;
  *	The guy stepped on a trap.... Make him pay.
  */
 
-be_trapped(tc)
-reg struct coord *tc;
+be_trapped(struct coord *tc)
 {
     reg struct trap *tp;
     reg char ch;
@@ -490,8 +515,7 @@ reg struct coord *tc;
  */
 
 struct trap *
-trap_at(y, x)
-reg int y, x;
+trap_at(int y, int x)
 {
     reg struct trap *tp, *ep;
 
@@ -513,8 +537,7 @@ reg int y, x;
  */
 
 struct coord *
-rndmove(who)
-struct thing *who;
+rndmove(struct thing *who)
 {
     reg int x, y;
     reg char ch;
@@ -564,8 +587,7 @@ struct thing *who;
  * isatrap:
  *	Returns TRUE if this character is some kind of trap
  */
-isatrap(ch)
-reg char ch;
+isatrap(char ch)
 {
 	switch(ch) {
 		case POST:

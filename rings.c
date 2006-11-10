@@ -5,13 +5,37 @@
  */
 
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * ring_on:
  *	Put on a ring
  */
-ring_on()
+
+extern void msg (const char *fmt, ...);
+extern int is_current (struct object *obj);
+int gethand (void);
+extern int setoflg (struct object *what, int bit);
+extern int add_haste (NCURSES_BOOL potion);
+extern int chg_abil (register int what, register int amt, register int how);
+extern int light (struct coord *cp);
+extern int aggravate (void);
+extern int updpack (int getmax);
+extern int look (NCURSES_BOOL wakeup);
+extern int fuse (int (*func) (/* ??? */), int arg, int time, int type);
+extern int get_str (register char *opt, WINDOW *awin);
+extern int dropcheck (struct object *op);
+extern int extinguish (int (*func) (/* ??? */));
+extern int sight (int fromfuse);
+int ringabil (void);
+extern int readchar (void);
+extern int o_on (struct object *what, int bit);
+int magring (struct object *what);
+extern int getbless (void);
+int isring (int hand, int ring);
+
+ring_on(void)
 {
     reg struct object *obj;
     reg struct linked_list *item;
@@ -103,7 +127,7 @@ ring_on()
     }
     else if(!r_know[wh] && r_guess[wh] == NULL) {
 	mpos = 0;
-	buf[0] = NULL;
+	buf[0] = 0;
 	msg("Call it: ");
 	if (get_str(buf, cw) == NORM) {
 	    r_guess[wh] = new(strlen(buf) + 1);
@@ -119,7 +143,7 @@ ring_on()
  * ring_off:
  *	Take off some ring
  */
-ring_off()
+ring_off(void)
 {
     reg int ring;
     reg struct object *obj;
@@ -151,8 +175,7 @@ ring_off()
  * toss_ring:
  *	Remove a ring and stop its effects
  */
-toss_ring(what)
-reg struct object *what;
+toss_ring(struct object *what)
 {
 	cur_ring[what == cur_ring[LEFT] ? LEFT : RIGHT] = NULL;
 	switch (what->o_which) {
@@ -183,7 +206,7 @@ reg struct object *what;
  * gethand:
  *	Get a hand to wear a ring
  */
-gethand()
+gethand(void)
 {
     reg int c;
 
@@ -204,8 +227,7 @@ gethand()
  * ring_eat:
  *	How much food does this ring use up?
  */
-ring_eat(hand)
-reg int hand;
+ring_eat(int hand)
 {
     if (cur_ring[hand] == NULL)
 	return 0;
@@ -241,12 +263,11 @@ reg int hand;
  *	Print ring bonuses
  */
 char *
-ring_num(what)
-reg struct object *what;
+ring_num(struct object *what)
 {
     static char number[5];
 
-    number[0] = NULL;
+    number[0] = 0;
     if (o_on(what,ISKNOW)) {	/* only if hero knows */
 	if (magring(what)) {	/* only rings with numbers */
 	    number[0] = ' ';
@@ -261,8 +282,7 @@ reg struct object *what;
  * magring:
  *	Returns TRUE if a ring has a number, i.e. +2
  */
-magring(what)
-reg struct object *what;
+magring(struct object *what)
 {
 	switch(what->o_which) {
 		case R_SPEED:
@@ -285,7 +305,7 @@ reg struct object *what;
  * ringabil:
  *	Compute effective abilities due to rings
  */
-ringabil()
+ringabil(void)
 {
 	reg struct object *rptr;
 	reg int i;
@@ -311,9 +331,9 @@ ringabil()
  * init_ring:
  *	Initialize a ring
  */
-init_ring(what,fromwiz)
-struct object *what;
-bool fromwiz;			/* TRUE when from wizards */
+init_ring(struct object *what, NCURSES_BOOL fromwiz)
+                    
+             			/* TRUE when from wizards */
 {
 	reg int much;
 	switch (what->o_which) {
@@ -362,8 +382,7 @@ bool fromwiz;			/* TRUE when from wizards */
  * iswearing:
  *	Returns TRUE when the hero is wearing a certain type of ring
  */
-iswearing(ring)
-int ring;
+iswearing(int ring)
 {
 	return (isring(LEFT,ring) || isring(RIGHT,ring));
 }
@@ -372,8 +391,7 @@ int ring;
  * isring:
  *	Returns TRUE if a ring is on a hand
  */
-isring(hand,ring)
-int hand, ring;
+isring(int hand, int ring)
 {
 	if (cur_ring[hand] != NULL && cur_ring[hand]->o_which == ring)
 		return TRUE;

@@ -14,7 +14,8 @@
 #else
 #include <time.h>
 #endif
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 #ifdef CHECKTIME
 static int num_checks;		/* times we've gone over in checkout() */
@@ -28,16 +29,38 @@ extern char *strrchr();
 extern char *rindex();
 #endif /*SYS3*/
 
-main(argc, argv, envp)
-char **argv;
-char **envp;
+
+int author (void);
+int holiday (void);
+extern void score (int amount, int aflag, char monst);
+extern int parse_opts (register char *str);
+extern int strucpy (register char *s1, register char *s2, register int len);
+extern int restore (char *file, char **envp);
+extern int init_player (void);
+extern int init_things (void);
+extern int init_names (void);
+extern int init_colors (void);
+extern int init_stones (void);
+extern int init_materials (void);
+int setup (void);
+extern int new_level (NCURSES_BOOL post);
+extern int fuse (int (*func) (/* ??? */), int arg, int time, int type);
+extern int daemon (int (*func) (/* ??? */), int arg, int type);
+extern int init_weapon (struct object *weap, char type);
+extern int setoflg (struct object *what, int bit);
+extern int add_pack (struct linked_list *item, NCURSES_BOOL silent);
+int playit (void);
+int fatal (char *s);
+extern int command (void);
+
+main(int argc, char **argv, char **envp)
 {
 	reg char *env;
 	reg struct passwd *pw;
 	reg struct linked_list *item;
 	reg struct object *obj;
 	reg char *ptr;
-	struct passwd *getpwuid();
+	struct passwd *getpwuid(__uid_t);
 	bool alldone, wpt;
 	char *getpass(), *crypt();
 	char gamename[50];
@@ -61,7 +84,7 @@ char **envp;
 
 	if(argc >= 2 && strcmp(argv[1], "-s") == 0) {
 		waswizard = TRUE;
-		score(0, -1);
+		score(0, -1, 0);
 		exit(0);
 	}
 	if(argc >= 2 && author() && strcmp(argv[1],"-a") == 0) {
@@ -263,7 +286,7 @@ char **envp;
  * endit:
  *	Exit the program abnormally.
  */
-endit()
+endit(void)
 {
 	fatal("Ok, if you want to exit that badly, I'll have to allow it");
 }
@@ -273,8 +296,7 @@ endit()
  *	Exit the program, printing a message.
  */
 
-fatal(s)
-char *s;
+fatal(char *s)
 {
 	clear();
 	move(LINES-2, 0);
@@ -303,8 +325,7 @@ void byebye(int how)
  *	Pick a very random number.
  */
 
-rnd(range)
-reg int range;
+rnd(int range)
 {
 	reg int wh;
 
@@ -320,8 +341,7 @@ reg int range;
  *	roll a number of dice
  */
 
-roll(number, sides)
-reg int number, sides;
+roll(int number, int sides)
 {
 	reg int dtotal = 0;
 
@@ -349,7 +369,7 @@ tstp()
 }
 # endif
 
-setup()
+setup(void)
 {
 
 #ifdef CHECKTIME
@@ -393,7 +413,7 @@ setup()
  *	refreshing things and looking at the proper times.
  */
 
-playit()
+playit(void)
 {
 	reg char *opts;
 
@@ -437,7 +457,7 @@ too_much()
  * author:
  *	See if a user is an author of the program
  */
-author()
+author(void)
 {
 	switch (getuid()) {
 		case 0:	/* user id of author (was rdk)  */
@@ -580,5 +600,5 @@ holiday()
 	return FALSE;			/* All other times are bad */
 }
 # else
-holiday () { return TRUE; }
+holiday (void) { return TRUE; }
 # endif

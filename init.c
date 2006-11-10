@@ -6,7 +6,8 @@
 
 #include <ctype.h>
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 static char *rainbow[] = {
 	"red",		"blue",		"green",	"yellow",
@@ -80,7 +81,13 @@ static char *metal[] = {
  * init_things:
  *	Initialize the probabilities for types of things
  */
-init_things()
+
+int badcheck (char *name, struct magic_item *magic, int bound);
+int pinit (void);
+extern int totalenc (void);
+extern int roll (int number, int sides);
+
+init_things(void)
 {
 	reg struct magic_item *mp;
 
@@ -94,7 +101,7 @@ init_things()
  * init_colors:
  *	Initialize the potion color scheme for this time
  */
-init_colors()
+init_colors(void)
 {
 	reg int i;
 	reg char **str;
@@ -118,7 +125,7 @@ init_colors()
  * init_names:
  *	Generate the names of the various scrolls
  */
-init_names()
+init_names(void)
 {
 	reg int nsyl;
 	reg char *cp, *sp;
@@ -136,7 +143,7 @@ init_names()
 		    }
 		    *cp++ = ' ';
 		}
-		*--cp = NULL;
+		*--cp = 0;
 		s_names[i] = new(strlen(prbuf)+1);
 		s_know[i] = FALSE;
 		s_guess[i] = (char *)NULL;
@@ -152,7 +159,7 @@ init_names()
  *	Initialize the ring stone setting scheme for this time
  */
 
-init_stones()
+init_stones(void)
 {
 	reg int i;
 	reg char **str;
@@ -176,7 +183,7 @@ init_stones()
  *	Initialize the construction materials for wands and staffs
  */
 
-init_materials()
+init_materials(void)
 {
 	reg int i;
 	reg char **str;
@@ -204,10 +211,7 @@ init_materials()
 	badcheck("sticks", ws_magic, MAXSTICKS);
 }
 
-badcheck(name, magic, bound)
-char *name;
-reg struct magic_item *magic;
-reg int bound;
+badcheck(char *name, struct magic_item *magic, int bound)
 {
 	reg struct magic_item *end;
 
@@ -228,7 +232,7 @@ reg int bound;
  *	roll up the rogue
  */
 
-init_player()
+init_player(void)
 {
 	pstats.s_lvl = 1;
 	pstats.s_exp = 0L;
@@ -251,7 +255,7 @@ init_player()
  * pinit:
  *	Returns the best 3 of 4 on a 6-sided die
  */
-pinit()
+pinit(void)
 {
 	int best[4];
 	reg int i, min, minind, dicetot;

@@ -7,11 +7,11 @@
 #include <ctype.h>
 #include "rogue.h"
 #include "mach_dep.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
 #include <stdarg.h>
 
 static void doadd(const char *fmt, va_list ap);
-static void endmsg();
+static void endmsg(void);
 
 /*
  * msg:
@@ -23,6 +23,10 @@ static int newpos = 0;
 
 
 /*VARARGS1*/
+
+int dead_end (char ch);
+extern int author (void);
+
 void msg(const char *fmt, ...)
 {
     va_list ap;
@@ -60,7 +64,7 @@ void addmsg(const char *fmt, ...)
  * Display a new msg (giving him a chance to see the previous one if it
  * is up there with the --More--)
  */
-void endmsg()
+void endmsg(void)
 {
     strcpy(huh, msgbuf);
     if (mpos)
@@ -87,8 +91,7 @@ void doadd(const char *fmt, va_list ap)
  *	Returns TRUE if it is ok to step on ch
  */
 
-int step_ok(ch)
-char ch;
+int step_ok(char ch)
 {
 	if (dead_end(ch))
 		return FALSE;
@@ -101,8 +104,7 @@ char ch;
  * dead_end:
  *	Returns TRUE if you cant walk through that character
  */
-int dead_end(ch)
-char ch;
+int dead_end(char ch)
 {
 	if (ch == '-' || ch == '|' || ch == ' ' || ch == SECRETDOOR)
 		return TRUE;
@@ -117,7 +119,7 @@ char ch;
  *	getchar.
  */
 
-int readchar()
+int readchar(void)
 {
     char c;
     int failcount = 0;
@@ -204,12 +206,11 @@ void wait_for(register char ch)
 /*
  * This routine reports the info from a debug call
  */
-void debug(errstr)
-char *errstr;
+void debug(char *errstr)
 {
 	register FILE *dfp;
-	char *timeptr, *gettime();
-	struct passwd *pp, *getpwuid();
+	char *timeptr, *gettime(void);
+	struct passwd *pp, *getpwuid(__uid_t);
 
 	if((dfp = fopen(BUGFILE,"a")) != NULL) { /* save in bug file */
 		timeptr = gettime();		/* get time string */
@@ -231,11 +232,11 @@ char *errstr;
 #else
 #include <time.h>
 #endif
-char *gettime()
+char *gettime(void)
 {
 	register char *timeptr;
-	char *ctime();
-	long int now, time();
+	char *ctime(const time_t *);
+	long int now, time(time_t *);
 
 	time(&now);		/* get current time */
 	timeptr = ctime(&now);	/* convert to string */

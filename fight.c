@@ -6,7 +6,8 @@
 
 #include <ctype.h>
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 long e_levels[] = {
     10L,20L,40L,80L,160L,320L,640L,1280L,2560L,5120L,10240L,20480L,
@@ -19,11 +20,44 @@ long e_levels[] = {
 
 static char fbuf[6];
 
-fight(mp, mn, weap, thrown)
-reg struct coord *mp;
-char mn;
-struct object *weap;
-bool thrown;
+
+extern int look (NCURSES_BOOL wakeup);
+extern void msg (const char *fmt, ...);
+extern int runto (struct coord *runner, struct coord *spot);
+extern int mon_index (char whichmon);
+int roll_em (struct stats *att, struct stats *def, struct object *weap, NCURSES_BOOL hurl);
+int thunk (struct object *weap, char *mname);
+int hit (char *er);
+int killed (struct linked_list *item, NCURSES_BOOL pr);
+int bounce (struct object *weap, char *mname);
+int miss (char *er);
+extern int death (char monst);
+extern int o_on (struct object *what, int bit);
+int save (int which);
+extern int iswearing (int ring);
+extern int chg_abil (register int what, register int amt, register int how);
+extern int chg_hpt (int howmany, NCURSES_BOOL alsomax, char whichmon);
+extern int roll (int number, int sides);
+int removelist (struct coord *mp, struct linked_list *item);
+int is_magic (struct object *obj);
+extern int _detach (register struct linked_list **list, register struct linked_list *item);
+extern int discard (register struct linked_list *item);
+extern int updpack (int getmax);
+extern int fuse (int (*func) (/* ??? */), int arg, int time, int type);
+extern int lengthen (int (*func) (/* ??? */), int xtime);
+extern int getpcon (int econ);
+extern int isring (int hand, int ring);
+extern int getpdex (int edex, NCURSES_BOOL heave);
+extern int str_plus (int str);
+extern void debug (char *errstr);
+extern int add_dam (int str);
+extern int getpwis (int ewis);
+extern void addmsg (const char *fmt, ...);
+extern int fallpos (struct coord *pos, struct coord *newpos, NCURSES_BOOL passages);
+extern int light (struct coord *cp);
+extern int fall (struct linked_list *item, NCURSES_BOOL pr);
+
+fight(struct coord *mp, char mn, struct object *weap, NCURSES_BOOL thrown)
 {
 
     reg struct thing *tp;
@@ -97,11 +131,10 @@ bool thrown;
  * attack:
  *	The monster attacks the player
  */
-attack(mp)
-reg struct thing *mp;
+attack(struct thing *mp)
 {
     reg char *mname;
-    char *prname();
+    char *prname(char *who, NCURSES_BOOL upper);
 
     /*
      * Since this is an attack, stop running and any healing that was
@@ -334,8 +367,7 @@ reg struct thing *mp;
  * swing:
  *	returns true if the swing hits
  */
-swing(at_lvl, op_arm, wplus)
-int at_lvl, op_arm, wplus;
+swing(int at_lvl, int op_arm, int wplus)
 {
     reg int res = rnd(20)+1;
     reg int need = (21 - at_lvl) - op_arm;
@@ -348,7 +380,7 @@ int at_lvl, op_arm, wplus;
  * check_level:
  *	Check to see if the guy has gone up a level.
  */
-check_level()
+check_level(void)
 {
     reg int i, add;
 
@@ -371,16 +403,13 @@ check_level()
  * roll_em:
  *	Roll several attacks
  */
-roll_em(att, def, weap, hurl)
-struct stats *att, *def;
-struct object *weap;
-bool hurl;
+roll_em(struct stats *att, struct stats *def, struct object *weap, NCURSES_BOOL hurl)
 {
     reg char *cp;
     reg int ndice, nsides, def_arm;
     reg bool did_hit = FALSE;
     reg int prop_hplus, prop_dplus;
-    char *mindex();
+    char *mindex(char *cp, char c);
 
     prop_hplus = prop_dplus = 0;
     if (weap == NULL) {
@@ -468,8 +497,7 @@ bool hurl;
  *	Look for char 'c' in string pointed to by 'cp'
  */
 char *
-mindex(cp, c)
-char *cp, c;
+mindex(char *cp, char c)
 {
 	reg int i;
 
@@ -486,9 +514,7 @@ char *cp, c;
  *	The print name of a combatant
  */
 char *
-prname(who, upper)
-reg char *who;
-bool upper;
+prname(char *who, NCURSES_BOOL upper)
 {
     static char tbuf[LINLEN];
 
@@ -510,8 +536,7 @@ bool upper;
  * hit:
  *	Print a message to indicate a succesful hit
  */
-hit(er)
-reg char *er;
+hit(char *er)
 {
     msg("%s hit.",prname(er, TRUE));
 }
@@ -521,8 +546,7 @@ reg char *er;
  * miss:
  *	Print a message to indicate a poor swing
  */
-miss(er)
-reg char *er;
+miss(char *er)
 {
     msg("%s miss%s.",prname(er, TRUE),(er == 0 ? "":"es"));
 }
@@ -532,9 +556,7 @@ reg char *er;
  * save_throw:
  *	See if a creature saves against something
  */
-save_throw(which, tp)
-int which;
-struct thing *tp;
+save_throw(int which, struct thing *tp)
 {
     reg int need;
 
@@ -548,8 +570,7 @@ struct thing *tp;
  * save:
  *	See if he saves against various nasty things
  */
-save(which)
-int which;
+save(int which)
 {
     return save_throw(which, &player);
 }
@@ -558,7 +579,7 @@ int which;
  * raise_level:
  *	The guy just magically went up a level.
  */
-raise_level()
+raise_level(void)
 {
 	pstats.s_exp = e_levels[pstats.s_lvl-1] + 1L;
 	check_level();
@@ -569,9 +590,7 @@ raise_level()
  * thunk:
  *	A missile hits a monster
  */
-thunk(weap, mname)
-reg struct object *weap;
-reg char *mname;
+thunk(struct object *weap, char *mname)
 {
 	if(weap->o_type == WEAPON)
 	    msg("The %s hits the %s", weaps[weap->o_which].w_name,mname);
@@ -584,9 +603,7 @@ reg char *mname;
  * bounce:
  *	A missile misses a monster
  */
-bounce(weap, mname)
-reg struct object *weap;
-reg char *mname;
+bounce(struct object *weap, char *mname)
 {
     if (weap->o_type == WEAPON)
 	msg("The %s misses the %s", weaps[weap->o_which].w_name,mname);
@@ -599,9 +616,7 @@ reg char *mname;
  * remove:
  *	Remove a monster from the screen
  */
-removelist(mp, item)
-reg struct coord *mp;
-reg struct linked_list *item;
+removelist(struct coord *mp, struct linked_list *item)
 {
     mvwaddch(mw, mp->y, mp->x, ' ');
     mvwaddch(cw, mp->y, mp->x, (THINGPTR(item))->t_oldch);
@@ -614,8 +629,7 @@ reg struct linked_list *item;
  * is_magic:
  *	Returns true if an object radiates magic
  */
-is_magic(obj)
-reg struct object *obj;
+is_magic(struct object *obj)
 {
     switch (obj->o_type) {
 	case ARMOR:
@@ -637,13 +651,11 @@ reg struct object *obj;
  * killed:
  *	Called to put a monster to death
  */
-killed(item, pr)
-reg struct linked_list *item;
-bool pr;
+killed(struct linked_list *item, NCURSES_BOOL pr)
 {
     reg struct thing *tp;
     reg struct linked_list *pitem, *nexti;
-    int notfight();
+    int notfight(int fromfuse);
 
     nochange = FALSE;
     tp = THINGPTR(item);

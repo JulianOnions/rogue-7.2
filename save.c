@@ -9,11 +9,11 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
 #include <errno.h>
 
 EXTCHAR version[], encstr[];
-EXTCHAR *ctime();
+EXTCHAR *ctime(const time_t *);
 
 
 typedef struct stat STAT;
@@ -23,14 +23,23 @@ STAT sbuf;
  * save_game:
  *	Save the current game
  */
-save_game()
+
+extern void msg (const char *fmt, ...);
+extern int get_str (register char *opt, WINDOW *awin);
+int save_file (FILE *savef);
+int encwrite (char *start, unsigned int size, FILE *outf);
+int encread (char *start, unsigned int size, int inf);
+extern int setup (void);
+extern int playit (void);
+
+save_game(void)
 {
 	reg FILE *savef;
 	reg int c;
 	char buf[LINLEN];
 
 	mpos = 0;
-	if (file_name[0] != NULL) {
+	if (file_name[0] != 0) {
 	    msg("Save file (%s)? ", file_name);
 	    do {
 		c = lower(getchar());
@@ -45,7 +54,7 @@ save_game()
 	}
 	msg("File name: ");
 	mpos = 0;
-	buf[0] = NULL;
+	buf[0] = 0;
 	if(get_str(buf, cw) == QUIT) {
 	    msg("");
 	    return FALSE;
@@ -71,7 +80,7 @@ gotfile:
  * auto_save:
  *	Automatically save a game
  */
-auto_save()
+auto_save(void)
 {
 	reg FILE *savef;
 	reg int i;
@@ -81,7 +90,7 @@ auto_save()
 	setuid(getuid());
 	setgid(getgid());
 	umask(022);
-	if (file_name[0] != NULL)
+	if (file_name[0] != 0)
 	    if ((savef = fopen(file_name,"w")) != NULL)
 		save_file(savef);
 	byebye(1);
@@ -91,15 +100,14 @@ auto_save()
  * save_file:
  *	Write the saved game on the file
  */
-save_file(savef)
-reg FILE *savef;
+save_file(FILE *savef)
 {
 	wclear(hw);
 	draw(hw);
 	fstat(fileno(savef), &sbuf);
 	fwrite("junk", 1, 5, savef);
 	fseek(savef, 0L, 0);
-	encwrite(version,(unsigned int)(sbrk(0) - version), savef);
+	encwrite(version,(unsigned int)((char *)sbrk(0) - version), savef);
 	fclose(savef);
 }
 
@@ -107,9 +115,7 @@ reg FILE *savef;
  * restore:
  *	Restore a saved game from a file
  */
-restore(file, envp)
-reg char *file;
-char **envp;
+restore(char *file, char **envp)
 {
 	reg int inf, pid;
 	int ret_status;
@@ -201,10 +207,7 @@ char **envp;
 /*
  * perform an encrypted write
  */
-encwrite(start, size, outf)
-reg char *start;
-unsigned int size;
-reg FILE *outf;
+encwrite(char *start, unsigned int size, FILE *outf)
 {
 	reg char *ep;
 
@@ -222,10 +225,7 @@ reg FILE *outf;
 /*
  * perform an encrypted read
  */
-encread(start, size, inf)
-reg char *start;
-unsigned int size;
-reg int inf;
+encread(char *start, unsigned int size, int inf)
 {
 	reg char *ep, *buff;
 	reg int rdsiz;
@@ -244,7 +244,7 @@ reg int inf;
 	siz = size;
 	while (siz--) {
 	    *start++ ^= *ep++;
-	    if (*ep == NULL)
+	    if (*ep == 0)
 		ep = encstr;
 	}
 	return size;

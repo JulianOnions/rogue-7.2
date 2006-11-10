@@ -7,15 +7,41 @@
 
 #include <ctype.h>
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 
 /*
  * fix_stick:
  *	Init a stick for the hero
  */
-fix_stick(cur)
-reg struct object *cur;
+
+extern void msg (const char *fmt, ...);
+extern int roll (int number, int sides);
+extern int chg_hpt (int howmany, NCURSES_BOOL alsomax, char whichmon);
+extern int del_pack (struct linked_list *what);
+extern int _detach (register struct linked_list **list, register struct linked_list *item);
+extern int discard (register struct linked_list *item);
+extern int killed (struct linked_list *item, NCURSES_BOOL pr);
+extern int light (struct coord *cp);
+int drain (int ymin, int ymax, int xmin, int xmax);
+extern int step_ok (char ch);
+extern int winat (int y, int x);
+extern int new_monster (struct linked_list *item, char type, struct coord *cp, NCURSES_BOOL treas);
+extern int randmonster (NCURSES_BOOL wander, NCURSES_BOOL baddie);
+extern int runto (struct coord *runner, struct coord *spot);
+extern int rnd_room (void);
+extern int rnd_pos (struct room *rp, struct coord *cp);
+extern int do_motion (struct object *obj, int ydelta, int xdelta);
+extern int save_throw (int which, struct thing *tp);
+extern int hit_monster (int y, int x, struct object *obj);
+extern int fight (struct coord *mp, char mn, struct object *weap, NCURSES_BOOL thrown);
+extern int show (int y, int x);
+extern int save (int which);
+extern int cansee (int y, int x);
+extern int o_off (struct object *what, int bit);
+
+fix_stick(struct object *cur)
 {
     cur->o_charges = 4 + rnd(5);
     cur->o_hurldmg = "1d1";
@@ -45,8 +71,7 @@ reg struct object *cur;
     }
 }
 
-do_zap(gotdir)
-bool gotdir;
+do_zap(NCURSES_BOOL gotdir)
 {
     reg struct linked_list *item;
     reg struct object *obj;
@@ -234,12 +259,12 @@ bool gotdir;
 	when WS_MISSILE:
 	{
 	    static struct object bolt = {
-		'*', {0, 0}, "", 0, 0, "6d6", 0, 0, 100, 1
+		'*', {0, 0}, "", 0, 0, "6d6", 0, 0, 100, 1, 0, 0, 0, 0
 	    };
 
 	    do_motion(&bolt, delta.y, delta.x);
 	    if (isalpha(mvwinch(mw, bolt.o_pos.y, bolt.o_pos.x))
-		&& !save_throw(VS_MAGIC,ldata(find_mons(unc(bolt.o_pos)))))
+		&& !save_throw(VS_MAGIC,THINGPTR(find_mons(unc(bolt.o_pos)))))
 		    hit_monster(unc(bolt.o_pos), &bolt);
 	    else
 		msg("Missle vanishes");
@@ -327,7 +352,7 @@ bool gotdir;
 	    struct coord spotpos[BOLT_LENGTH];
 	    static struct object bolt =
 	    {
-		'*' , {0, 0}, "", 0, 0, "6d6" , 0, 0, 100, 0
+		'*' , {0, 0}, "", 0, 0, "6d6" , 0, 0, 100, 0, 0, 0, 0, 0
 	    };
 	    switch (delta.y + delta.x) {
 		case 0: dirch = '/';
@@ -363,7 +388,7 @@ bool gotdir;
 		    default:
 			if (!bounced && isalpha(ch)) {
 			    if(!save_throw(VS_MAGIC,
-			      ldata(find_mons(unc(pos))))) {
+					   THINGPTR(find_mons(unc(pos))))) {
 				bolt.o_pos = pos;
 				hit_monster(unc(pos), &bolt);
 				used = TRUE;
@@ -445,8 +470,7 @@ bool gotdir;
  *	Do drain hit points from player shtick
  */
 
-drain(ymin, ymax, xmin, xmax)
-int ymin, ymax, xmin, xmax;
+drain(int ymin, int ymax, int xmin, int xmax)
 {
     reg int i, j, cnt;
     reg struct thing *ick;
@@ -483,13 +507,12 @@ int ymin, ymax, xmin, xmax;
  * charge a wand for wizards.
  */
 char *
-charge_str(obj)
-reg struct object *obj;
+charge_str(struct object *obj)
 {
     static char buf[20];
 
     if (o_off(obj,ISKNOW))	/* quit if he doesnt know */
-	buf[0] = NULL;
+	buf[0] = 0;
     else
 	sprintf(buf, " [%d]", obj->o_charges);
     return buf;

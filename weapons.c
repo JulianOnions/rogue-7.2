@@ -6,15 +6,36 @@
 
 #include <ctype.h>
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * missile:
  *	Fire a missile in a given direction
  */
 
-missile(ydelta, xdelta)
-int ydelta, xdelta;
+
+extern int dropcheck (struct object *op);
+extern int is_current (struct object *obj);
+extern void msg (const char *fmt, ...);
+extern int readchar (void);
+extern int _detach (register struct linked_list **list, register struct linked_list *item);
+extern int updpack (int getmax);
+int do_motion (struct object *obj, int ydelta, int xdelta);
+int hit_monster (int y, int x, struct object *obj);
+int fall (struct linked_list *item, NCURSES_BOOL pr);
+extern int cansee (int y, int x);
+extern int show (int y, int x);
+extern int step_ok (char ch);
+extern int winat (int y, int x);
+int fallpos (struct coord *pos, struct coord *newpos, NCURSES_BOOL passages);
+extern int light (struct coord *cp);
+extern int _attach (register struct linked_list **list, register struct linked_list *item);
+extern int discard (register struct linked_list *item);
+extern int o_on (struct object *what, int bit);
+extern int fight (struct coord *mp, char mn, struct object *weap, NCURSES_BOOL thrown);
+
+missile(int ydelta, int xdelta)
 {
     reg struct object *obj, *nowwield;
     reg struct linked_list *item, *nitem;
@@ -76,9 +97,7 @@ int ydelta, xdelta;
  * do the actual motion on the screen done by an object traveling
  * across the room
  */
-do_motion(obj, ydelta, xdelta)
-reg struct object *obj;
-reg int ydelta, xdelta;
+do_motion(struct object *obj, int ydelta, int xdelta)
 {
     /*
      * Come fly with us ...
@@ -120,9 +139,7 @@ reg int ydelta, xdelta;
  *	Drop an item someplace around here.
  */
 
-fall(item, pr)
-reg struct linked_list *item;
-bool pr;
+fall(struct linked_list *item, NCURSES_BOOL pr)
 {
     reg struct object *obj;
     reg struct room *rp;
@@ -157,9 +174,7 @@ bool pr;
  *	Set up the initial goodies for a weapon
  */
 
-init_weapon(weap, type)
-reg struct object *weap;
-char type;
+init_weapon(struct object *weap, char type)
 {
     reg struct init_weps *iwp;
 
@@ -181,9 +196,7 @@ char type;
  * Does the missile hit the monster
  */
 
-hit_monster(y, x, obj)
-reg int y, x;
-struct object *obj;
+hit_monster(int y, int x, struct object *obj)
 {
     static struct coord mp;
 
@@ -198,8 +211,7 @@ struct object *obj;
  */
 
 char *
-num(n1, n2)
-reg int n1, n2;
+num(int n1, int n2)
 {
     static char numbuf[LINLEN];
 
@@ -217,7 +229,7 @@ reg int n1, n2;
  *	Pull out a certain weapon
  */
 
-wield()
+wield(void)
 {
     reg struct linked_list *item;
     reg struct object *obj, *oweapon;
@@ -244,9 +256,7 @@ bad:
 /*
  * pick a random position around the give (y, x) coordinates
  */
-fallpos(pos, newpos, passages)
-reg struct coord *pos, *newpos;
-reg bool passages;
+fallpos(struct coord *pos, struct coord *newpos, NCURSES_BOOL passages)
 {
     reg int y, x, cnt, ch;
 

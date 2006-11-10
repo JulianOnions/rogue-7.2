@@ -5,14 +5,26 @@
  */
 
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * updpack:
  *	Update his pack weight and adjust fooduse accordingly
  */
-updpack(getmax)
-int getmax;
+
+int totalenc (void);
+int packweight (void);
+int itemweight (struct object *wh);
+extern int iswearing (int ring);
+extern int o_on (struct object *what, int bit);
+extern int extinguish (int (*func) (/* ??? */));
+extern int fuse (int (*func) (/* ??? */), int arg, int time, int type);
+extern void msg (const char *fmt, ...);
+extern int drop (struct linked_list *item);
+extern void debug (char *errstr);
+
+updpack(int getmax)
 {
 
 	reg int topcarry, curcarry;
@@ -37,7 +49,7 @@ int getmax;
  * packweight:
  *	Get the total weight of the hero's pack
  */
-packweight()
+packweight(void)
 {
 	reg struct object *obj;
 	reg struct linked_list *pc;
@@ -60,8 +72,7 @@ packweight()
  * itemweight:
  *	Get the weight of an object
  */
-itemweight(wh)
-reg struct object *wh;
+itemweight(struct object *wh)
 {
 	reg int weight;
 
@@ -84,7 +95,7 @@ reg struct object *wh;
  * playenc:
  *	Get hero's carrying ability above norm
  */
-playenc()
+playenc(void)
 {
 	switch(pstats.s_ef.a_str) {
 		case 24: return 3000;
@@ -117,7 +128,7 @@ playenc()
  * totalenc:
  *	Get total weight that the hero can carry
  */
-totalenc()
+totalenc(void)
 {
 	reg int wtotal;
 
@@ -138,11 +149,10 @@ totalenc()
  *	See if the hero can carry his pack
  */
 
-wghtchk()
+wghtchk(int junk)
 {
 	reg int dropchk, err = TRUE;
 	reg char ch;
-	int wghtchk();
 
 	inwhgt = TRUE;
 	if (pstats.s_pack > pstats.s_carry) {
@@ -161,7 +171,7 @@ wghtchk()
 		    debug("wghtchk dropped on an item");
 		    err = FALSE;
 		}
-		else if(dropchk == NULL) {
+		else if(dropchk == 0) {
 		    mpos = 0;
 		    msg("You must drop something");
 		}
@@ -181,7 +191,7 @@ wghtchk()
  *			-1 hit for heavy pack weight
  */
 
-hitweight()
+hitweight(void)
 {
 	return(2 - foodlev);
 }

@@ -5,13 +5,26 @@
  */
 
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * do_rooms:
  *	Place the rooms in the dungeon
  */
-do_rooms()
+
+extern int rnd_room (void);
+int rnd_pos (struct room *rp, struct coord *cp);
+extern void debug (char *errstr);
+int draw_room (struct room *rp);
+extern int new_monster (struct linked_list *item, char type, struct coord *cp, NCURSES_BOOL treas);
+extern int randmonster (NCURSES_BOOL wander, NCURSES_BOOL baddie);
+extern int mon_index (char whichmon);
+extern int _attach (register struct linked_list **list, register struct linked_list *item);
+int vert (int cnt);
+int horiz (int cnt);
+
+do_rooms(void)
 {
     int mloops, mchance, nummons;
     bool treas = FALSE;
@@ -133,8 +146,7 @@ do_rooms()
  * draw_room:
  *	Draw a box around a room
  */
-draw_room(rp)
-reg struct room *rp;
+draw_room(struct room *rp)
 {
     reg int j, k;
 
@@ -165,8 +177,7 @@ reg struct room *rp;
  * horiz:
  *	draw a horizontal line
  */
-horiz(cnt)
-reg int cnt;
+horiz(int cnt)
 {
     while (cnt-- > 0)
 	addch('-');
@@ -177,8 +188,7 @@ reg int cnt;
  * vert:
  *	draw a vertical line
  */
-vert(cnt)
-reg int cnt;
+vert(int cnt)
 {
     reg int x, y;
 
@@ -195,9 +205,7 @@ reg int cnt;
  * rnd_pos:
  *	pick a random spot in a room
  */
-rnd_pos(rp, cp)
-reg struct room *rp;
-reg struct coord *cp;
+rnd_pos(struct room *rp, struct coord *cp)
 {
     cp->x = rp->r_pos.x + rnd(rp->r_max.x-2) + 1;
     cp->y = rp->r_pos.y + rnd(rp->r_max.y-2) + 1;

@@ -5,14 +5,32 @@
  */
 
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * new_level:
  *	Dig and draw a new level 
  */
-new_level(post)
-bool post;
+
+extern int _free_list (register struct linked_list **ptr);
+extern int fuse (int (*func) (/* ??? */), int arg, int time, int type);
+extern int do_post (void);
+extern int lev_mon (void);
+extern int do_rooms (void);
+extern int do_passages (void);
+int put_things (void);
+int rnd_room (void);
+extern int rnd_pos (struct room *rp, struct coord *cp);
+extern void debug (char *errstr);
+extern int winat (int y, int x);
+extern int light (struct coord *cp);
+extern int extinguish (int (*func) (/* ??? */));
+extern int author (void);
+extern void msg (const char *fmt, ...);
+extern int _attach (register struct linked_list **list, register struct linked_list *item);
+
+new_level(NCURSES_BOOL post)
 {
 	reg struct linked_list *mptr;
 	reg struct thing *tptr;
@@ -133,7 +151,7 @@ again:
  * rnd_room:
  *	Pick a room that is really there
  */
-rnd_room()
+rnd_room(void)
 {
 	reg int rm;
 
@@ -149,7 +167,7 @@ rnd_room()
  *	put potions and scrolls on this level
  */
 
-put_things()
+put_things(void)
 {
 	reg int i, cnt;
 	reg struct linked_list *item;

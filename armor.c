@@ -5,18 +5,26 @@
  */
 
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
 
 /*
  * wear:
  *	The player wants to wear something, so let the hero try
  */
-wear()
+
+extern void msg (const char *fmt, ...);
+int waste_time (void);
+extern int setoflg (struct object *what, int bit);
+extern int dropcheck (struct object *op);
+extern int do_daemons (int flag);
+extern int do_fuses (int flag);
+
+wear(void)
 {
     struct linked_list *item;
     struct object *obj;
 
-	if (cur_armor != NULL) {
+    if (cur_armor != NULL) {
 		msg("You are already wearing some");
 		after = FALSE;
 		return;
@@ -40,7 +48,7 @@ wear()
  * take_off:
  *	Get the armor off of the players back
  */
-take_off()
+take_off(void)
 {
 	reg struct object *obj;
 
@@ -60,7 +68,7 @@ take_off()
  * waste_time:
  *	Do nothing but let other things happen
  */
-waste_time()
+waste_time(void)
 {
 	if (inwhgt)		/* if from wghtchk, then done */
 	     return;

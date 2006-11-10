@@ -6,7 +6,8 @@
  */
 
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 #define EMPTY 0
 #define DAEMON -1
@@ -29,8 +30,12 @@ struct delayed_action {
  * d_slot:
  *	Find an empty slot in the daemon/fuse list
  */
+
+extern void debug (char *errstr);
+extern void msg (const char *fmt, ...);
+
 struct delayed_action *
-d_slot()
+d_slot(void)
 {
 	reg int i;
 	reg struct delayed_action *dev;
@@ -48,8 +53,7 @@ d_slot()
  *	Find a particular slot in the table
  */
 struct delayed_action *
-find_slot(func)
-reg int (*func)();
+find_slot(int (*func) (/* ??? */))
 {
 	reg int i;
 	reg struct delayed_action *dev;
@@ -65,8 +69,7 @@ reg int (*func)();
  * daemon:
  *	Start a daemon, takes a function.
  */
-daemon(func, arg, type)
-reg int arg, type, (*func)();
+daemon(int (*func) (/* ??? */), int arg, int type)
 {
 	reg struct delayed_action *dev;
 
@@ -83,8 +86,7 @@ reg int arg, type, (*func)();
  * kill_daemon:
  *	Remove a daemon from the list
  */
-kill_daemon(func)
-reg int (*func)();
+kill_daemon(int (*func) (/* ??? */))
 {
 	reg struct delayed_action *dev;
 
@@ -103,8 +105,7 @@ reg int (*func)();
  *	Run all the daemons that are active with the current flag,
  *	passing the argument to the function.
  */
-do_daemons(flag)
-reg int flag;
+do_daemons(int flag)
 {
 	reg struct delayed_action *dev;
 
@@ -124,8 +125,7 @@ reg int flag;
  * fuse:
  *	Start a fuse to go off in a certain number of turns
  */
-fuse(func, arg, time, type)
-reg int (*func)(), arg, time, type;
+fuse(int (*func) (/* ??? */), int arg, int time, int type)
 {
 	reg struct delayed_action *wire;
 
@@ -142,8 +142,7 @@ reg int (*func)(), arg, time, type;
  * lengthen:
  *	Increase the time until a fuse goes off
  */
-lengthen(func, xtime)
-reg int (*func)(), xtime;
+lengthen(int (*func) (/* ??? */), int xtime)
 {
 	reg struct delayed_action *wire;
 
@@ -157,8 +156,7 @@ reg int (*func)(), xtime;
  * extinguish:
  *	Put out a fuse
  */
-extinguish(func)
-reg int (*func)();
+extinguish(int (*func) (/* ??? */))
 {
 	reg struct delayed_action *wire;
 
@@ -173,8 +171,7 @@ reg int (*func)();
  * do_fuses:
  *	Decrement counters and start needed fuses
  */
-do_fuses(flag)
-reg int flag;
+do_fuses(int flag)
 {
 	reg struct delayed_action *wire;
 
@@ -200,7 +197,7 @@ reg int flag;
  * activity:
  *	Show wizard number of demaons and memory blocks used
  */
-activity()
+activity(void)
 {
 	msg("Daemons = %d : Memory Items = %d : Memory Used = %ld",
 	    demoncnt,total,sbrk(0));

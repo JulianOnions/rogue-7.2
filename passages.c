@@ -5,14 +5,21 @@
  */
 
 #include "rogue.h"
-#include "rogue.ext"
+#include "rogue_ext.h"
+
 
 /*
  * do_passages:
  *	Draw all the passages on a level.
  */
 
-do_passages()
+
+int conn (int r1, int r2);
+extern void msg (const char *fmt, ...);
+extern void debug (char *errstr);
+int door (struct room *rm, struct coord *cp);
+
+do_passages(void)
 {
     reg struct rdes *r1, *r2;
     reg int i, j;
@@ -114,8 +121,7 @@ do_passages()
  *	Draw a corridor from a room in a certain direction.
  */
 
-conn(r1, r2)
-int r1, r2;
+conn(int r1, int r2)
 {
     reg struct room *rpf, *rpt;
     reg char rmt;
@@ -248,9 +254,7 @@ int r1, r2;
  * also enters the door in the exits array of the room.
  */
 
-door(rm, cp)
-reg struct room *rm;
-reg struct coord *cp;
+door(struct room *rm, struct coord *cp)
 {
     cmov(*cp);
     addch(rnd(10) < level - 1 && rnd(100) < 20 ? SECRETDOOR : DOOR);
@@ -262,7 +266,7 @@ reg struct coord *cp;
  * add_pass:
  *	add the passages to the current window (wizard command)
  */
-add_pass()
+add_pass(void)
 {
     reg int y, x, ch;
 
