@@ -12,7 +12,7 @@
 #define DAEMON -1
 #define MAXDAEMONS 20
 
-#define _X_ { EMPTY }
+#define _X_ { EMPTY, NULL, 0, 0 }
 
 struct delayed_action {
 	int d_type;

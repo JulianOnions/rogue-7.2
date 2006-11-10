@@ -15,7 +15,7 @@ CFILES=	vers.c global.c armor.c chase.c command.c daemon.c daemons.c\
 	sticks.c things.c trader.c weapons.c wizard.c
 
 VERSION=	-DBSD4_2
-CFLAGS=		-g -c
+CFLAGS=		-g -c -W
 LDFLAGS=	
 INSDIR = /usr/sheriff/jpo/games
 
@@ -38,3 +38,6 @@ vers.o:	vers.c
 
 listing:
 	pr $(HDRS) $(CFILES) | lpr
+
+clean:
+	rm -f $(OBJS) rogue7.2

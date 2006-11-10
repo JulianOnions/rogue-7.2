@@ -175,11 +175,11 @@ void status(int fromfuse)
  */
 int illeg_ch(char ch)
 {
-	if (ch < 32 || ch > 127)
-	    return TRUE;
-	if (ch >= '0' && ch <= '9')
-	    return TRUE;
-	return FALSE;
+    if (ch < 32 || ch > 127)
+	return TRUE;
+    if (ch >= '0' && ch <= '9')
+	return TRUE;
+    return FALSE;
 }
 
 /*
