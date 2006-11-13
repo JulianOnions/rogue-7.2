@@ -74,6 +74,9 @@ _free_list(register struct linked_list **ptr)
 
 discard(register struct linked_list *item)
 {
+#ifdef DEBUGLIST
+    fprintf(stderr, "Discard 0x%x in 0x%x\n", item->l_data, item);
+#endif
     FREE(item->l_data);
     FREE(item);
     total--;
@@ -93,7 +96,13 @@ new_item(int size)
 	msg("Ran out of memory for header after %d items", total);
     if ((item->l_data = new(size)) == NULL)
 	msg("Ran out of memory for data after %d items", total);
+#ifdef DEBUGLIST
+    fprintf(stderr, "Allocate 0x%x in 0x%x\n", item->l_data, item);
+#endif
     item->l_next = item->l_prev = NULL;
+#ifdef DEBUGLIST
+    item->l_size = size;
+#endif
     total++;
     return item;
 }
@@ -110,3 +119,12 @@ new(int size)
     }
     return space;
 }
+
+#ifdef DEBUGLIST
+void checksize(struct linked_list *list, int size)
+{
+    if (list->l_size != size) {
+	fprintf(stderr, "Bad size for list %d != %d\n", list->l_size, size);
+    }
+}
+#endif

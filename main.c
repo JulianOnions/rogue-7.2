@@ -264,6 +264,8 @@ main(int argc, char **argv, char **envp)
 	obj->o_ac = armors[RINGMAIL].a_class - rnd(4);
 	obj->o_weight = armors[RINGMAIL].a_wght;
 	obj->o_count = 1;
+	obj->o_group = 0;
+	obj->o_flags = 0;
 	setoflg(obj,ISKNOW);
 	cur_armor = obj;
 	add_pack(item, TRUE);
@@ -275,6 +277,8 @@ main(int argc, char **argv, char **envp)
 	obj->o_type = FOOD;
 	obj->o_count = 1;
 	obj->o_which = 0;
+	obj->o_group = 0;
+	obj->o_flags = 0;
 	obj->o_weight = things[TYP_FOOD].mi_wght;
 	add_pack(item, TRUE);
 
@@ -315,8 +319,8 @@ fatal(char *s)
 
 void byebye(int how)
 {
-	resetty();		/* restore tty params */
-	exit(how);		/* exit like flag says */
+    resetty();		/* restore tty params */
+    exit(how);		/* exit like flag says */
 }
 
 
@@ -377,6 +381,7 @@ setup(void)
 #endif
 
 	signal(SIGHUP, auto_save);
+#if 0
 	signal(SIGILL, auto_save);
 	signal(SIGTRAP, auto_save);
 	signal(SIGIOT, auto_save);
@@ -387,6 +392,7 @@ setup(void)
 	signal(SIGBUS, auto_save);
 	signal(SIGSEGV, auto_save);
 	signal(SIGSYS, auto_save);
+#endif
 	signal(SIGPIPE, auto_save);
 	signal(SIGTERM, auto_save);
 	signal(SIGQUIT, endit);

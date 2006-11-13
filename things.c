@@ -56,7 +56,8 @@ inv_name(struct object *obj, NCURSES_BOOL drop)
 		sprintf(pb, "called %s", s_guess[wh]);
 	    else
 		sprintf(pb, "titled '%s'", s_names[wh]);
-        when POTION:
+	    break;
+        case POTION:
 	    if (obj->o_count == 1)
 		strcpy(prbuf, "A potion ");
 	    else
@@ -76,7 +77,8 @@ inv_name(struct object *obj, NCURSES_BOOL drop)
 		    p_colors[wh]);
 	    else
 		sprintf(prbuf,"%d %s potions",obj->o_count,p_colors[wh]);
-	when FOOD:
+	    break;
+	case FOOD:
 	    if (wh == 1)
 		if (obj->o_count == 1)
 		    sprintf(prbuf, "A%s %s", vowelstr(fruit), fruit);
@@ -87,7 +89,8 @@ inv_name(struct object *obj, NCURSES_BOOL drop)
 		    strcpy(prbuf, "Some food");
 		else
 		    sprintf(prbuf, "%d rations of food", obj->o_count);
-	when WEAPON:
+	    break;
+	case WEAPON:
 	    if (obj->o_count > 1)
 		sprintf(prbuf, "%d ", obj->o_count);
 	    else
@@ -100,16 +103,19 @@ inv_name(struct object *obj, NCURSES_BOOL drop)
 		sprintf(pb, "%s", weaps[wh].w_name);
 	    if (obj->o_count > 1)
 		strcat(prbuf, "s");
-	when ARMOR:
+	    break;
+	    case ARMOR:
 	    if (o_on(obj,ISKNOW) || o_on(obj, ISPOST))
 		sprintf(prbuf, "%s %s",
 		    num(armors[wh].a_class - obj->o_ac, 0),
 		    armors[wh].a_name);
 	    else
 		sprintf(prbuf, "%s", armors[wh].a_name);
-	when AMULET:
+	    break;
+	    case AMULET:
 	    strcpy(prbuf, "The Amulet of Yendor");
-	when STICK:
+	    break;
+	case STICK:
 	    sprintf(prbuf, "A %s ", ws_type[wh]);
 	    pb = &prbuf[strlen(prbuf)];
 	    if (ws_know[wh] || o_on(obj, ISPOST)) {
@@ -125,7 +131,8 @@ inv_name(struct object *obj, NCURSES_BOOL drop)
 	    else
 		sprintf(&prbuf[2], "%s %s", ws_made[wh],
 		    ws_type[wh]);
-        when RING:
+	    break;
+        case RING:
 	    if (r_know[wh] || o_on(obj, ISPOST)) {
 		sprintf(prbuf, "A%s ring of %s", ring_num(obj),
 		    r_magic[wh].mi_name);
@@ -140,9 +147,11 @@ inv_name(struct object *obj, NCURSES_BOOL drop)
 	    else
 	      sprintf(prbuf,"A%s %s ring",vowelstr(r_stones[wh]),
 		    r_stones[wh]);
-	otherwise:
+	    break;
+	default:
 	    sprintf(errbuf, "Something bizarre %s", unctrl(obj->o_type));
 	    debug(errbuf);
+	    break;
     }
     if (obj == cur_armor)
 	strcat(prbuf, " (being worn)");
@@ -322,70 +331,78 @@ new_thing(NCURSES_BOOL treas)
 	whi = pick_one(things, NUMTHINGS);
 
     switch (whi) {
-	case TYP_POTION:
-	    cur->o_type = POTION;
-	    cur->o_which = pick_one(p_magic, MAXPOTIONS);
-	    cur->o_weight = things[TYP_POTION].mi_wght;
-	    cur->o_count += extras();
-	when TYP_SCROLL:
-	    cur->o_type = SCROLL;
-	    cur->o_which = pick_one(s_magic, MAXSCROLLS);
-	    cur->o_weight = things[TYP_SCROLL].mi_wght;
-	    cur->o_count += extras();
-	when TYP_FOOD:
-	    no_food = 0;
-	    cur->o_weight = things[TYP_FOOD].mi_wght;
-	    cur->o_type = FOOD;
-	    cur->o_count += extras();
-	    if (rnd(100) > 15)
-		cur->o_which = 0;	/* normal food */
-	    else
-		cur->o_which = 1;	/* hero's "fruit" */
-	when TYP_WEAPON:
-	    cur->o_type = WEAPON;
-	    cur->o_which = rnd(MAXWEAPONS);
-	    init_weapon(cur, cur->o_which);
-	    if ((chance = rnd(100)) < 10) {
-		setoflg(cur,ISCURSED);
-		cur->o_hplus -= rnd(3)+1;
-		cur->o_dplus -= rnd(3)+1;
-	    }
-	    else if (chance < 15) {
-		cur->o_hplus += rnd(3)+1;
-		cur->o_dplus += rnd(3)+1;
-	    }
-	when TYP_ARMOR: {
-	    int tot = 0, wha = 0;
-	    cur->o_type =ARMOR;
-	    for (chance = rnd(100); wha < MAXARMORS; wha++) {
-		tot += armors[wha].a_prob;
-		if (chance < tot)
-		    break;
-	    }
-	    if (wha == MAXARMORS) {
-		sprintf(errbuf,"Picked a bad armor %d",chance);
-		debug(errbuf);
-		wha = 0;
-	    }
-	    cur->o_which = wha;
-	    cur->o_ac = armors[wha].a_class;
-	    cur->o_weight = armors[wha].a_wght;
-	    if ((chance = rnd(100)) < 20) {
-		setoflg(cur,ISCURSED);
-		cur->o_ac += rnd(3)+1;
-	    }
-	    else if (chance < 30)
-		cur->o_ac -= rnd(3)+1;
+    case TYP_POTION:
+	cur->o_type = POTION;
+	cur->o_which = pick_one(p_magic, MAXPOTIONS);
+	cur->o_weight = things[TYP_POTION].mi_wght;
+	cur->o_count += extras();
+	break;
+    case TYP_SCROLL:
+	cur->o_type = SCROLL;
+	cur->o_which = pick_one(s_magic, MAXSCROLLS);
+	cur->o_weight = things[TYP_SCROLL].mi_wght;
+	cur->o_count += extras();
+	break;
+    case TYP_FOOD:
+	no_food = 0;
+	cur->o_weight = things[TYP_FOOD].mi_wght;
+	cur->o_type = FOOD;
+	cur->o_count += extras();
+	if (rnd(100) > 15)
+	    cur->o_which = 0;	/* normal food */
+	else
+	    cur->o_which = 1;	/* hero's "fruit" */
+	break;
+    case TYP_WEAPON:
+	cur->o_type = WEAPON;
+	cur->o_which = rnd(MAXWEAPONS);
+	init_weapon(cur, cur->o_which);
+	if ((chance = rnd(100)) < 10) {
+	    setoflg(cur,ISCURSED);
+	    cur->o_hplus -= rnd(3)+1;
+	    cur->o_dplus -= rnd(3)+1;
 	}
-	when TYP_RING:
-	    cur->o_type = RING;
-	    cur->o_which = pick_one(r_magic, MAXRINGS);
-	    init_ring(cur,FALSE);
-	when TYP_STICK:
-	default:
-	    cur->o_type = STICK;
-	    cur->o_which = pick_one(ws_magic, MAXSTICKS);
-	    fix_stick(cur);
+	else if (chance < 15) {
+	    cur->o_hplus += rnd(3)+1;
+	    cur->o_dplus += rnd(3)+1;
+	}
+	break;
+    case TYP_ARMOR:
+    {
+	int tot = 0, wha = 0;
+	cur->o_type =ARMOR;
+	for (chance = rnd(100); wha < MAXARMORS; wha++) {
+	    tot += armors[wha].a_prob;
+	    if (chance < tot)
+		break;
+	}
+	if (wha == MAXARMORS) {
+	    sprintf(errbuf,"Picked a bad armor %d",chance);
+	    debug(errbuf);
+	    wha = 0;
+	}
+	cur->o_which = wha;
+	cur->o_ac = armors[wha].a_class;
+	cur->o_weight = armors[wha].a_wght;
+	if ((chance = rnd(100)) < 20) {
+	    setoflg(cur,ISCURSED);
+	    cur->o_ac += rnd(3)+1;
+	}
+	else if (chance < 30)
+	    cur->o_ac -= rnd(3)+1;
+    }
+	break;
+    case TYP_RING:
+	cur->o_type = RING;
+	cur->o_which = pick_one(r_magic, MAXRINGS);
+	init_ring(cur,FALSE);
+	break;
+    case TYP_STICK:
+    default:
+	cur->o_type = STICK;
+	cur->o_which = pick_one(ws_magic, MAXSTICKS);
+	fix_stick(cur);
+	break;
     }
     return item;
 }

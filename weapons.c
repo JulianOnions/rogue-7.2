@@ -188,8 +188,10 @@ init_weapon(struct object *weap, char type)
 	weap->o_count = rnd(8) + 8;
 	weap->o_group = newgrp();
     }
-    else
+    else {
 	weap->o_count = 1;
+	weap->o_group = 0;
+    }
 }
 
 /*

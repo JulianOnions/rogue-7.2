@@ -81,9 +81,11 @@ itemweight(struct object *wh)
 	    case ARMOR:
 		if ((armors[wh->o_which].a_class - wh->o_ac) > 0)
 			weight /= 2;
-	    when WEAPON:
+		break;
+	    case WEAPON:
 		if ((wh->o_hplus + wh->o_dplus) > 0)
 			weight /= 2;
+		break;
 	}
 	if(o_on(wh,ISCURSED))
 		weight += weight / 5;	/* 20% more for cursed */

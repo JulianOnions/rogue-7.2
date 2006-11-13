@@ -167,9 +167,9 @@ pl_off(long int what)
  * o_on:
  *	Returns TRUE in the objects flag is set
  */
-o_on(struct object *what, int bit)
+int o_on(struct object *what, int bit)
 {
-	return (what->o_flags & bit);
+    return (what->o_flags & bit);
 }
 
 

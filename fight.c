@@ -706,10 +706,6 @@ killed(struct linked_list *item, NCURSES_BOOL pr)
      * Empty the monsters pack
      */
     pitem = tp->t_pack;
-    /*
-     * Get rid of the monster.
-     */
-    removelist(&tp->t_pos, item);
     while (pitem != NULL) {
 	reg struct object *obj;
 
@@ -720,4 +716,8 @@ killed(struct linked_list *item, NCURSES_BOOL pr)
 	fall(pitem, FALSE);
 	pitem = nexti;
     }
+    /*
+     * Get rid of the monster.
+     */
+    removelist(&tp->t_pos, item);
 }

@@ -54,8 +54,21 @@
 #define next(ptr)	(*ptr).l_next
 #define prev(ptr)	(*ptr).l_prev
 #define ldata(ptr)	(*ptr).l_data
-#define OBJPTR(what)	(struct object *)((*what).l_data)
-#define THINGPTR(what)	(struct thing *)((*what).l_data)
+#ifdef DEBUGLIST
+#define CHECKSIZE(what, size) checksize(what, size)
+struct linked_list;
+void checksize(struct linked_list *list, int size);
+#else
+#define CHECKSIZE(what, size) 0
+#endif
+
+#ifdef DEBUGLIST
+#define OBJPTR(what)	(CHECKSIZE(what,sizeof(struct object)), (struct object *)((*what).l_data))
+#define THINGPTR(what)	(CHECKSIZE(what,sizeof(struct thing)), (struct thing *)((*what).l_data))
+#else
+#define OBJPTR(what)	((struct object *)((*what).l_data))
+#define THINGPTR(what)	((struct thing *)((*what).l_data))
+#endif
 
 #define inroom(rp, cp) (\
 	(cp)->x <= (rp)->r_pos.x + ((rp)->r_max.x - 1) && \
@@ -93,8 +106,8 @@
 #define CTRL(ch) (ch & 0x1F)	/* 4.2 defines this in <sys/ttychars.h> */
 #endif				/* which is included by <curses.h> */
 
-#define ALLOC(x) malloc((unsigned int) x)
-#define FREE(x) cfree((char *) x)
+#define ALLOC(x) calloc((unsigned int) x, 1)
+#define FREE(x) free((char *) x)
 #define	EQSTR(a, b, c)	(strncmp(a, b, c) == 0)
 #define GOLDCALC (rnd(50 + 10 * level) + 2)
 #define ISMULT(type) (type == POTION || type == SCROLL || type == FOOD)
@@ -421,6 +434,9 @@ struct monlev {
 struct linked_list {
 	struct linked_list *l_next;
 	struct linked_list *l_prev;
+#ifdef DEBUGLIST
+    int l_size;
+#endif
 	char *l_data;			/* Various structure pointers */
 };
 
