@@ -319,6 +319,8 @@ fatal(char *s)
 
 void byebye(int how)
 {
+/*    echo();
+    nocbreak();
     resetty();		/* restore tty params */
     exit(how);		/* exit like flag says */
 }

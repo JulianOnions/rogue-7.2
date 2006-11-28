@@ -127,10 +127,6 @@ void score(int amount, int aflag, char monst)
 	wprintw(hw,"---   %d gold pieces   ---\n",purse);
 	draw(hw);
     }
-    if (aflag != -1) {
-	endwin();
-	resetty();
-    }
     /*
      * Open file and read list
      */
@@ -158,6 +154,11 @@ void score(int amount, int aflag, char monst)
 	getch();
 	wclear(cw);
 	draw(cw);
+    }
+    if (aflag != -1) {
+	endwin();
+/*	echo(); nocbreak();
+	resetty();*/
     }
     if (author() || wizard)
 	if (strcmp(prbuf, "names") == 0)
